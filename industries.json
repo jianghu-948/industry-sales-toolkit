@@ -2,5 +2,5 @@
   { "id": "semiconductor", "name": "半导体",   "file": "半导体行业销售工具包.html", "idx": "01" },
   { "id": "newenergy",     "name": "新能源",   "file": "新能源行业销售工具包.html", "idx": "02" },
   { "id": "healthcare",    "name": "医疗健康", "file": "医疗健康行业销售工具包.html", "idx": "03" },
- { "id": "cross-border trade",    "name": "跨境贸易", "file": "跨境贸易行业销售工具包.html", "idx": "04" }
+ { "id": "cross-border trade",    "name": "跨境贸易", "file": "跨境电商销售工具包.html", "idx": "04" }
 ]
