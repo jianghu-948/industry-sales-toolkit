@@ -101,60 +101,74 @@ body{
       影刀 RPA 行业销售工具包
       <span>Industry Sales Toolkit</span>
     </div>
-    <nav class="industry-tabs">
-      <button class="industry-tab active" data-industry="semiconductor">
-        <span class="idx">01</span>半导体
-      </button>
-      <button class="industry-tab" data-industry="newenergy">
-        <span class="idx">02</span>新能源
-      </button>
-      <button class="industry-tab" data-industry="healthcare">
-        <span class="idx">03</span>医疗健康
-      </button>
-    </nav>
+    <nav class="industry-tabs" id="industryTabs"></nav>
   </div>
 </header>
 
 <div class="frame-wrap">
-  <iframe id="contentFrame" src="半导体行业销售工具包.html" title="行业销售工具包"></iframe>
+  <iframe id="contentFrame" src="" title="行业销售工具包"></iframe>
 </div>
 
 <script>
 (function(){
-  var tabs = document.querySelectorAll('.industry-tab');
+  var nav = document.getElementById('industryTabs');
   var frame = document.getElementById('contentFrame');
+  var industries = [];
+  var defaultIndex = 0;
 
-  var urls = {
-    semiconductor: '半导体行业销售工具包.html',
-    newenergy: '新能源行业销售工具包.html',
-    healthcare: '医疗健康行业销售工具包.html'
-  };
-
-  tabs.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var industry = btn.dataset.industry;
-      if (!industry || btn.classList.contains('active')) return;
-
-      tabs.forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      frame.src = urls[industry];
+  function buildTabs(list){
+    nav.innerHTML = '';
+    list.forEach(function(item, i){
+      var btn = document.createElement('button');
+      btn.className = 'industry-tab' + (i === defaultIndex ? ' active' : '');
+      btn.dataset.industry = item.id;
+      btn.innerHTML = '<span class="idx">' + item.idx + '</span>' + item.name;
+      btn.addEventListener('click', function(){
+        var active = nav.querySelector('.industry-tab.active');
+        if (active === btn) return;
+        if (active) active.classList.remove('active');
+        btn.classList.add('active');
+        frame.src = item.file;
+        sessionStorage.setItem('activeIndustry', item.id);
+      });
+      nav.appendChild(btn);
     });
-  });
-
-  // Restore last selected industry from sessionStorage
-  var last = sessionStorage.getItem('activeIndustry');
-  if (last && urls[last] && last !== 'semiconductor') {
-    tabs.forEach(function(b){ b.classList.remove('active'); });
-    var target = document.querySelector('.industry-tab[data-industry="' + last + '"]');
-    if (target) { target.classList.add('active'); frame.src = urls[last]; }
   }
 
-  // Remember selection
-  tabs.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      if (btn.dataset.industry) sessionStorage.setItem('activeIndustry', btn.dataset.industry);
+  function loadIndustry(id, file){
+    frame.src = file;
+    sessionStorage.setItem('activeIndustry', id);
+  }
+
+  function selectTab(id){
+    var btns = nav.querySelectorAll('.industry-tab');
+    btns.forEach(function(b){
+      var match = b.dataset.industry === id;
+      b.classList.toggle('active', match);
+      if (match) frame.src = industries.find(function(x){ return x.id === id; }).file;
     });
-  });
+  }
+
+  fetch('industries.json')
+    .then(function(r){ return r.json(); })
+    .then(function(list){
+      industries = list;
+      buildTabs(list);
+
+      // Load first industry by default
+      if (list.length > 0){
+        loadIndustry(list[defaultIndex].id, list[defaultIndex].file);
+      }
+
+      // Restore last selected from sessionStorage
+      var last = sessionStorage.getItem('activeIndustry');
+      if (last && list.find(function(x){ return x.id === last; })){
+        selectTab(last);
+      }
+    })
+    .catch(function(err){
+      console.error('加载行业配置失败:', err);
+    });
 })();
 </script>
 
