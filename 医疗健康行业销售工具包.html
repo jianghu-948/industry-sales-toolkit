@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>医疗健康 · 影刀 RPA</title>
+<title>医疗健康行业销售工具包｜专业动态版</title>
 <style>
 :root{
   --bg:#f4f7fb;
@@ -1121,22 +1121,6 @@ main.content .sheet{
 <script>
 // Hard structural guard: keep Module 4 panel children in the intended sequence even if older generated CSS/HTML remains.
 (function(){
-
-  // Scene domain tabs in m3
-  (function(){
-    var root=document.querySelector('#m3');
-    if(!root) return;
-    var tabs=root.querySelectorAll('.scene-domain-nav button');
-    var panels=root.querySelectorAll('.scene-domain-panel');
-    tabs.forEach(function(btn){
-      btn.addEventListener('click',function(){
-        var id=btn.dataset.sceneDomain;
-        tabs.forEach(function(b){ b.classList.toggle('active', b===btn); });
-        panels.forEach(function(p){ p.classList.toggle('active', p.id===id); });
-      });
-    });
-  })();
-
   function enforceClusterOrder(){
     document.querySelectorAll('.module-panel#m4 .panel').forEach(function(panel){
       var tabs = panel.querySelector(':scope > nav.tabs');
@@ -1249,7 +1233,6 @@ main.content .sheet{
   #m4 .jh-region-count{justify-self:start;min-height:58px;}
 }
 </style>
-
 <style id="swimlane-lane-alignment-fix">
 /* 业务流图：左侧职能列文字纵向居中、横向左对齐 */
 .swim .cell.lane{
@@ -1261,54 +1244,81 @@ main.content .sheet{
   padding-left:14px !important;
   padding-right:12px !important;
 }
-
-/* RPA 场景地图：Tab 页签切换场景域 */
+</style>
+<style id="healthcare-scene-tabs-like-semiconductor">
+/* RPA 场景地图：参考半导体工具包的页签式呈现 */
 #m3 .scene-domain-nav{
-  width:100%;
-  margin:0 0 14px;
-  display:flex;
-  justify-content:flex-start;
-  flex-wrap:wrap;
-  gap:8px;
-  padding:6px 0;
+  width:100% !important;
+  max-width:none !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:12px !important;
+  margin:0 0 18px !important;
+  padding:16px 18px !important;
+  background:#fff !important;
+  border:1px solid var(--line) !important;
+  border-radius:18px !important;
+  box-shadow:0 8px 22px rgba(15,23,42,.045) !important;
+  position:static !important;
+  top:auto !important;
+  z-index:1 !important;
+  overflow:visible !important;
 }
 #m3 .scene-domain-nav button{
-  appearance:none;
-  border:1px solid #d7e1ef;
-  background:#f8fafc;
-  color:#344054;
-  border-radius:999px;
-  padding:9px 16px;
-  font-size:13px;
-  line-height:1;
-  font-weight:900;
-  white-space:nowrap;
-  cursor:pointer;
-  transition:.18s ease;
+  appearance:none !important;
+  border:1px solid #d7e1ef !important;
+  background:#f8fafc !important;
+  color:#344054 !important;
+  border-radius:999px !important;
+  min-height:40px !important;
+  padding:11px 18px !important;
+  font-size:13.5px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+  white-space:nowrap !important;
+  transition:.18s ease !important;
 }
 #m3 .scene-domain-nav button:hover{
-  border-color:#93c5fd;
-  background:#eff6ff;
-  color:#1d4ed8;
+  border-color:#93c5fd !important;
+  background:#eff6ff !important;
+  color:#1d4ed8 !important;
 }
 #m3 .scene-domain-nav button.active{
-  background:linear-gradient(135deg,var(--blue),var(--cyan));
-  border-color:transparent;
-  color:#fff;
-  box-shadow:0 9px 18px rgba(37,99,235,.18);
+  color:#fff !important;
+  border-color:transparent !important;
+  background:linear-gradient(135deg,var(--blue),var(--cyan)) !important;
+  box-shadow:0 10px 20px rgba(37,99,235,.18) !important;
 }
-#m3 .scene-domain-panel{display:none;}
-#m3 .scene-domain-panel.active{display:block;}
-#m3 .scene-domain-panel.active .sheet{margin-bottom:0;}
+#m3 .scene-domain-panel{display:none !important;}
+#m3 .scene-domain-panel.active{display:block !important;}
+/* 场景页签内的模块卡片与上下内容块保持同宽 */
+#m3 > .section.scene-domain-panel{
+  width:100% !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+/* 点击切换后不再需要旧的锚点导航条 */
+#m3 > .nav{display:none !important;}
 @media(max-width:760px){
-  #m3 .scene-domain-nav{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:8px 0;}
-  #m3 .scene-domain-nav button{padding:8px 13px;font-size:12px;}
+  #m3 .scene-domain-nav{gap:8px;padding:12px !important;border-radius:16px !important;}
+  #m3 .scene-domain-nav button{min-height:36px !important;padding:9px 13px !important;font-size:12.5px !important;}
 }
 </style>
-</head>
+<style id="healthcare-overview-restored-fix">
+/* 作战总览恢复为普通区块；其余场景域继续用页签切换 */
+#m3 #overview{display:block !important;}
+#m3 #overview + .scene-domain-nav{margin-top:18px !important;}
+#m3 .scene-domain-nav button[data-scene-domain="qa"].active{color:#fff !important;}
+</style></head>
 <body>
 <div class="app">
 <aside class="sidebar">
+<div class="brand">
+<h1>医疗健康行业销售工具包</h1>
+</div>
 <div class="nav-title">核心模块</div>
 <div class="module-nav">
 <button class="module-btn active" data-module="m1"><span class="no">01</span><span><strong>行业入门</strong><span>产业链 / 业务流 / 数据流</span></span></button>
@@ -1512,7 +1522,8 @@ main.content .sheet{
 <section class="page summary"><div class="sheet"><div class="header"><div><h2>客户优先级与销售切入总结</h2><div class="sub">用于销售资源分配、线索筛选和首轮拜访话术设计。</div></div></div><div class="card"><h3>客户优先级总览</h3><table class="summary-table"><tr><th>优先级</th><th>客户类型</th><th>推荐指数</th><th>核心判断</th><th>优先切入部门/场景</th></tr><tr><td>S</td><td>大型制药企业</td><td>★★★★★</td><td>合规最重、场景最多、预算最充足，是医疗健康行业 RPA 的首选客户。</td><td>QA/QC 质量部门、注册事务部（RA）、药物警戒部（PV）、供应链与采购部门</td></tr><tr><td>S</td><td>医药流通企业</td><td>★★★★★</td><td>订单、库存、物流、对账密集，ROI 最容易量化。</td><td>供应链运营部、财务对账部、信息化部门</td></tr><tr><td>A</td><td>医院集团</td><td>★★★★☆</td><td>高协同、高审批、高报送，重点卖“减负”和“提效”。</td><td>医务/运营部门、药剂科、财务部门</td></tr><tr><td>A</td><td>CRO/CDMO 企业</td><td>★★★★☆</td><td>文档密集、项目密集、人效敏感，是 RPA 高适配客群。</td><td>临床运营部、数据管理部、GMP 运营部门（CDMO）</td></tr><tr><td>B+</td><td>医疗器械企业</td><td>★★★☆☆</td><td>注册合规、经销商体系、售后服务是三大切入点。</td><td>注册事务部、供应链部门、售后服务部门</td></tr><tr><td>B</td><td>连锁药店与互联网医药平台</td><td>★★★☆☆</td><td>偏运营自动化，多平台、多订单、多数据同步是核心机会。</td><td>电商运营部门、合规与审核部门、财务部门</td></tr></table></div><div class="value-grid"><div class="value"><h3>合规效率提升</h3><p>围绕 GMP、GSP、注册、药物警戒、医保报送等强监管场景，减少人工差错并强化留痕。</p></div><div class="value"><h3>人工替代</h3><p>替代 Excel、邮件、网页系统、ERP/WMS/CRM 之间的重复录入、下载、核对和报表工作。</p></div><div class="value"><h3>风险降低</h3><p>降低数据错漏、资质过期、审计资料缺失、对账差异遗漏、监管报送延迟等运营风险。</p></div></div><div class="final-quote">医疗行业卖 RPA，本质不是卖技术，而是卖“合规效率提升 + 人工替代 + 风险降低”。</div></div></section>
 </section>
 <section class="module" id="m3">
-<div class="module-head"><div><h2>RPA 场景地图：找到能聊、值得聊、容易出 ROI 的场景</h2><p>保留“场景 + 销售话术”的卡片表达，同时增加卡片间距和话术区层级，避免内容拥挤。</p></div></div><section class="section" id="overview"><div class="sheet">
+<div class="module-head"><div><h2>RPA 场景地图：找到能聊、值得聊、容易出 ROI 的场景</h2><p>保留“场景 + 销售话术”的卡片表达，同时增加卡片间距和话术区层级，避免内容拥挤。</p></div></div>
+<section class="section" id="overview"><div class="sheet">
 <div class="section-title"><div><h2>一眼判断：医疗健康行业 RPA 机会在哪里</h2><p>销售不用先判断技术边界，先识别这些“高概率商机信号”。</p></div><div class="badge">销售识别雷达</div></div>
 <div class="radar">
 <div class="card radar-card"><span class="num">高频重复</span><span class="radar-desc">每天/每周大量人工下载、录入、核对、汇总。</span></div>
@@ -1526,8 +1537,8 @@ main.content .sheet{
 <div class="card"><h3>优先找什么部门</h3><p>QA/QC、RA、PV、供应链、财务、运营、信息化。</p></div>
 <div class="card"><h3>优先聊什么价值</h3><p>减少人工、降低差错、提升合规留痕、缩短处理周期。</p></div>
 </div>
-</div></section>
-<nav aria-label="RPA场景地图场景域切换" class="scene-domain-nav"><button class="active" data-scene-domain="hc_sd1" type="button">质量合规</button><button data-scene-domain="hc_sd2" type="button">注册事务</button><button data-scene-domain="hc_sd3" type="button">药物警戒</button><button data-scene-domain="hc_sd4" type="button">供应链流通</button><button data-scene-domain="hc_sd5" type="button">财务对账</button><button data-scene-domain="hc_sd6" type="button">医院终端</button><button data-scene-domain="hc_sd7" type="button">销售运营</button><button data-scene-domain="hc_sd8" type="button">销售打法</button></nav><section class="section scene-domain-panel active" id="hc_sd1"><div class="sheet domain">
+</div></section><nav aria-label="RPA场景地图模块切换" class="scene-domain-nav healthcare-scene-tabs"><button class="active" data-scene-domain="qa" type="button">质量合规</button><button data-scene-domain="ra" type="button">注册事务</button><button data-scene-domain="pv" type="button">药物警戒</button><button data-scene-domain="supply" type="button">供应链流通</button><button data-scene-domain="finance" type="button">财务对账</button><button data-scene-domain="hospital" type="button">医院终端</button><button data-scene-domain="commercial" type="button">销售运营</button><button data-scene-domain="playbook" type="button">销售打法</button></nav>
+<section class="section scene-domain-panel active" id="qa"><div class="sheet domain">
 <div class="domain-head"><div><h2>质量合规：QA/QC 是药企最优先的切入口</h2><p>关键词：GMP、批记录、审计、偏差、CAPA、供应商资质。</p></div><div class="priority p-s">优先级 S</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">制药企业</span><span class="chip">CDMO</span><span class="chip">医疗器械企业</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>QA 团队经常加班整理资料。</li><li>审计前需要人工汇总大量文档。</li><li>供应商资质、证照有效期靠人工台账维护。</li><li>偏差/CAPA 流程催办靠人工盯。</li></ul></div></aside>
@@ -1538,7 +1549,8 @@ main.content .sheet{
 <div class="scene"><span class="role">QC</span><h3>检验台账与报告信息核对</h3><p>对检验结果、批号、物料号、日期、结论等字段做跨表核对和异常提示。</p><div class="meta"><span>核对</span><span>降差错</span><span>报表</span></div><div class="talk"><small>销售话术</small>“只要现在还在用 Excel 做结果汇总和交叉核对，就适合先做一个小场景验证。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd2"><div class="sheet domain">
+</div></section>
+<section class="section scene-domain-panel" id="ra"><div class="sheet domain">
 <div class="domain-head"><div><h2>注册事务：信息跟踪与资料整理适合作为轻量切入</h2><p>关键词：NMPA、CDE、注册进度、法规更新、申报资料。</p></div><div class="priority p-a">优先级 A</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">创新药企</span><span class="chip">仿制药企</span><span class="chip">器械企业</span><span class="chip">CRO</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>注册团队每天查多个监管网站。</li><li>项目进度、补充资料、法规更新靠人工跟踪。</li><li>注册台账维护依赖 Excel。</li></ul></div></aside>
@@ -1549,7 +1561,8 @@ main.content .sheet{
 <div class="scene"><span class="role">RA</span><h3>注册台账自动维护</h3><p>把邮件、网站、内部系统里的关键节点信息同步到注册台账，减少重复录入。</p><div class="meta"><span>跨系统</span><span>录入</span><span>汇总</span></div><div class="talk"><small>销售话术</small>“只要台账靠人维护，就可以先从自动更新字段和生成提醒开始。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd3"><div class="sheet domain">
+</div></section>
+<section class="section scene-domain-panel" id="pv"><div class="sheet domain">
 <div class="domain-head"><div><h2>药物警戒：ADR/SAE 信息处理是强监管高价值场景</h2><p>关键词：ADR、SAE、ICSR、文献检索、安全报告。</p></div><div class="priority p-s">优先级 S</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">上市药企</span><span class="chip">CRO</span><span class="chip">创新药企</span><span class="chip">互联网医药</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>PV 邮箱、热线、表单来源分散。</li><li>病例初筛、录入、分派耗时。</li><li>文献检索与周期性汇总压力大。</li></ul></div></aside>
@@ -1560,7 +1573,8 @@ main.content .sheet{
 <div class="scene"><span class="role">PV</span><h3>周期性安全数据汇总</h3><p>从多个系统导出数据，按模板生成安全性统计表和递交前检查清单。</p><div class="meta"><span>报表汇总</span><span>跨系统</span><span>可量化</span></div><div class="talk"><small>销售话术</small>“周期性报告前的数据汇总和格式化，是非常适合自动化的重复工作。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd4"><div class="sheet domain">
+</div></section>
+<section class="section scene-domain-panel" id="supply"><div class="sheet domain">
 <div class="domain-head"><div><h2>供应链与医药流通：订单、物流、库存台账、冷链追踪</h2><p>关键词：ERP、WMS、TMS、GSP、冷链、订单、配送。</p></div><div class="priority p-s">优先级 S</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">医药流通企业</span><span class="chip">药企供应链</span><span class="chip">连锁药店</span><span class="chip">器械经销体系</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>订单来自邮件、Excel、平台，仍需人工录入。</li><li>物流状态、冷链温度需要跨平台查询。</li><li>库存台账与业务系统之间存在人工搬运。</li></ul></div></aside>
@@ -1571,7 +1585,8 @@ main.content .sheet{
 <div class="scene"><span class="role">运营</span><h3>采购/销售台账自动汇总</h3><p>从 ERP、WMS、平台导出数据，生成按客户、品类、区域的运营报表。</p><div class="meta"><span>报表</span><span>数据汇总</span><span>低门槛</span></div><div class="talk"><small>销售话术</small>“很多管理报表不是系统没有数据，而是每天要人工导出、合并、调整格式。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd5"><div class="sheet domain">
+</div></section>
+<section class="section scene-domain-panel" id="finance"><div class="sheet domain">
 <div class="domain-head"><div><h2>财务对账：最容易量化 ROI 的通用切入场景</h2><p>关键词：应收应付、发票、银行流水、经销商、医院回款。</p></div><div class="priority p-s">优先级 S</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">医药流通</span><span class="chip">连锁药店</span><span class="chip">药企</span><span class="chip">医院集团</span><span class="chip">器械企业</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>对账靠 Excel，月底集中加班。</li><li>发票、订单、回款、出库单需要多表核对。</li><li>差异项需要人工标记和邮件沟通。</li></ul></div></aside>
@@ -1582,7 +1597,8 @@ main.content .sheet{
 <div class="scene"><span class="role">财务</span><h3>月结报表自动生成</h3><p>按固定模板汇总销售、回款、库存、发票、费用数据，自动生成月结材料。</p><div class="meta"><span>报表</span><span>模板化</span><span>节省加班</span></div><div class="talk"><small>销售话术</small>“月底固定模板、固定来源、固定动作，正是 RPA 最适合替代的部分。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd6"><div class="sheet domain">
+</div></section>
+<section class="section scene-domain-panel" id="hospital"><div class="sheet domain">
 <div class="domain-head"><div><h2>医院与终端：重点卖“行政减负、报送提效、对账提效”</h2><p>关键词：HIS、医保、DRG/DIP、药剂科、运营报表。</p></div><div class="priority p-a">优先级 A</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">三甲医院</span><span class="chip">医院集团</span><span class="chip">医联体</span><span class="chip">专科连锁</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>行政报表、医保报送占用大量人力。</li><li>HIS、医保、财务系统之间需要重复核对。</li><li>科室运营指标需要人工汇总。</li></ul></div></aside>
@@ -1593,7 +1609,8 @@ main.content .sheet{
 <div class="scene"><span class="role">运营</span><h3>科室指标自动汇总</h3><p>按固定指标口径汇总门诊量、住院量、手术量、收入、耗材等运营数据。</p><div class="meta"><span>管理报表</span><span>多系统</span><span>减人工</span></div><div class="talk"><small>销售话术</small>“院内经营分析数据往往都有，但汇总过程人工多，可以先自动化报表。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd7"><div class="sheet domain">
+</div></section>
+<section class="section scene-domain-panel" id="commercial"><div class="sheet domain">
 <div class="domain-head"><div><h2>销售运营与市场准入：适合从数据汇总和资质检查切入</h2><p>关键词：准入、招采、经销商、价格、终端、销售合规。</p></div><div class="priority p-a">优先级 A</div></div>
 <div class="domain-body">
 <aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">药企商业化团队</span><span class="chip">器械企业</span><span class="chip">医药流通</span><span class="chip">连锁药店</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>招采平台、价格信息、终端数据靠人工收集。</li><li>经销商资质、协议、授权材料需要定期检查。</li><li>销售数据分散在 CRM、ERP、Excel。</li></ul></div></aside>
@@ -1604,7 +1621,8 @@ main.content .sheet{
 <div class="scene"><span class="role">合规</span><h3>价格与促销执行核查</h3><p>对渠道价格、促销政策执行情况、异常折扣进行数据比对和提醒。</p><div class="meta"><span>价格监控</span><span>异常识别</span><span>风控</span></div><div class="talk"><small>销售话术</small>“RPA 可以先帮业务发现异常，不替代最终业务判断。”</div></div>
 </main>
 </div>
-</div></section><section class="section scene-domain-panel" id="hc_sd8"><div class="sheet">
+</div></section>
+<section class="section scene-domain-panel" id="playbook"><div class="sheet">
 <div class="section-title playbook-title"><div><h2>销售打法：重点是“会识别、会开口、会推进”</h2></div><div class="badge">Sales Playbook</div></div>
 <div class="playbook">
 <div class="card do"><h3>建议这样聊</h3><ul class="why-list"><li>“哪些工作每天都要重复导出、录入、核对？”</li><li>“哪些报表月底最容易加班？”</li><li>“哪些流程涉及合规留痕，人工出错成本比较高？”</li><li>“哪些系统之间现在还靠 Excel 或人工搬数据？”</li></ul></div>
@@ -1617,7 +1635,10 @@ main.content .sheet{
 <div class="qa-item"><b>销售要带回的信息：</b>系统名称、数据来源、人工步骤、频次、参与人数、当前耗时、差错影响。</div>
 </div>
 <div class="card" style="margin-top:16px;background:linear-gradient(90deg,#eff6ff,#fff);border-left:6px solid var(--blue)"><h3>一句话总结</h3><p style="font-size:20px;font-weight:900;color:#1e3a8a">医疗健康行业卖 RPA，不是卖“机器人”，而是卖“把高频、重复、强合规的人工流程稳定自动化”。</p></div>
-</div></section><footer class="footer">医疗健康行业 RPA 销售作战地图 · 面向销售全员使用</footer><section class="module" id="m4">
+</div></section>
+<footer class="footer">医疗健康行业 RPA 销售作战地图 · 面向销售全员使用</footer>
+</section>
+<section class="module" id="m4">
 <div class="module-head"><div><h2>客户在哪里：按区域找头部客户与切入口</h2><p>按产业集群定位头部客户，结合优先触达部门和高频流程切入口规划销售路线。</p></div></div>
 <div class="section-title">
 <div><h2>一、全国重点产业集群总览</h2><p>按医药制造、创新药、医疗器械、IVD、CXO、医药商业等产业密度归类。</p></div>
@@ -1942,7 +1963,6 @@ main.content .sheet{
   });
 })();
 </script>
-
 <script>
 (function(){
   function initIsolatedRegionTabs(){
@@ -1960,6 +1980,27 @@ main.content .sheet{
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initIsolatedRegionTabs);
   else initIsolatedRegionTabs();
+})();
+</script>
+<script id="healthcare-scene-tabs-like-semiconductor-js">
+(function(){
+  function initHealthcareSceneTabs(){
+    var root=document.querySelector('#m3');
+    if(!root) return;
+    var tabs=root.querySelectorAll('.scene-domain-nav button[data-scene-domain]');
+    var panels=root.querySelectorAll('.scene-domain-panel');
+    tabs.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id=btn.getAttribute('data-scene-domain');
+        tabs.forEach(function(b){ b.classList.toggle('active', b===btn); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.id===id); });
+        var nav=root.querySelector('.scene-domain-nav');
+        if(nav) nav.scrollIntoView({behavior:'smooth', block:'nearest'});
+      });
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initHealthcareSceneTabs);
+  else initHealthcareSceneTabs();
 })();
 </script>
 </body>
