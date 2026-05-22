@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>医疗健康 · 影刀 RPA</title>
+<style>
+:root{
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --panel2:#f8fafc;
+  --ink:#0f172a;
+  --muted:#667085;
+  --soft:#eef4ff;
+  --line:#d8e2ef;
+  --blue:#2563eb;
+  --cyan:#0891b2;
+  --green:#059669;
+  --orange:#ea580c;
+  --red:#dc2626;
+  --purple:#7c3aed;
+  --shadow:0 14px 36px rgba(15,23,42,.08);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:radial-gradient(circle at 18% -8%,#ffffff 0,#f3f7fc 38%,#edf3f9 100%);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  line-height:1.56;
+}
+a{color:inherit}
+.app{
+  display:grid;
+  grid-template-columns:280px minmax(0,1fr);
+  min-height:100vh;
+}
+.sidebar{
+  position:sticky;top:0;height:100vh;
+  padding:22px 18px;
+  background:linear-gradient(180deg,#0f172a,#173b8f 64%,#0e7490);
+  color:#fff;
+  overflow:auto;
+}
+.brand{padding:10px 8px 18px;border-bottom:1px solid rgba(255,255,255,.18);margin-bottom:18px}
+.brand .kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.74;margin-bottom:10px}
+.brand h1{font-size:26px;line-height:1.16;margin:0 0 10px;font-weight:950;letter-spacing:-.04em}
+.brand p{font-size:13px;line-height:1.6;color:rgba(255,255,255,.78);margin:0}
+.nav-title{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.66);margin:16px 8px 8px}
+.module-nav{display:grid;gap:8px}
+.module-btn{
+  width:100%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;
+  text-align:left;border-radius:16px;padding:13px 14px;cursor:pointer;
+  transition:.18s ease;display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:center;
+}
+.module-btn:hover{background:rgba(255,255,255,.13);transform:translateY(-1px)}
+.module-btn.active{background:#fff;color:#0f172a;border-color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.module-btn .no{width:32px;height:32px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.12);font-weight:900}
+.module-btn.active .no{background:#eff6ff;color:#2563eb}
+.module-btn strong{font-size:15px;display:block}
+.module-btn span:last-child{display:block;font-size:12px;color:rgba(255,255,255,.68);margin-top:2px}
+.module-btn.active span:last-child{color:#64748b}
+.content{
+  padding:26px clamp(18px,2.6vw,40px) 56px;
+  min-width:0;
+}
+.topbar{
+  max-width:1540px;margin:0 auto 18px;
+  background:rgba(255,255,255,.84);backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:24px;
+  box-shadow:0 12px 28px rgba(15,23,42,.055);
+  padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.topbar h2{margin:0;font-size:26px;letter-spacing:-.035em;line-height:1.18}
+.topbar p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.stat{min-width:96px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:9px 12px}
+.stat b{display:block;color:var(--blue);font-size:22px;line-height:1}
+.stat span{font-size:11px;color:#64748b;font-weight:750}
+.module{display:none;max-width:1540px;margin:0 auto}
+.module.active{display:block}
+.module-head{
+  margin:20px 0 14px;padding:0 2px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:18px;
+}
+.module-head h2,.section-title h2{font-size:30px;line-height:1.15;margin:0;font-weight:950;letter-spacing:-.035em}
+.module-head p,.section-title p,.note,.sub{color:var(--muted);font-size:14px;margin:7px 0 0}
+.section{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:22px;margin:0 0 20px;
+}
+.sheet{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:22px;margin:0 0 18px;overflow:hidden;
+}
+.section-title,.header,.domain-head,.cluster-head{
+  border-bottom:1px solid var(--line);
+  padding-bottom:14px;
+  margin-bottom:18px;
+}
+.header,.domain-head,.cluster-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+h1,h2,h3,h4{color:var(--ink)}
+h2{font-size:28px;line-height:1.18;margin:0 0 8px;font-weight:950;letter-spacing:-.035em}
+h3{font-size:18px;line-height:1.25;margin:0 0 10px;font-weight:900}
+h4{font-size:15px;margin:0 0 8px;font-weight:900}
+p{margin:0;color:#344054}
+.badge,.priority,.count,.rank,.num{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;border:0;border-radius:999px;font-weight:900;
+}
+.priority{padding:9px 14px;white-space:nowrap;align-self:start}
+.s,.p-s{background:linear-gradient(135deg,var(--red),var(--orange))}
+.a,.p-a{background:linear-gradient(135deg,var(--blue),var(--cyan))}
+.b,.p-b{background:linear-gradient(135deg,var(--purple),var(--blue))}
+.badge{padding:10px 14px;font-size:13px;white-space:nowrap}
+.legend,.tags,.hero-tags,.chips,.companies{display:flex;flex-wrap:wrap;gap:8px}
+.tag,.pill,.chip,.hero-tag,.role,.meta span,.hubs span{
+  display:inline-flex;align-items:center;max-width:100%;
+  border:1px solid var(--line);background:#f8fafc;color:#344054;border-radius:999px;
+  padding:5px 10px;font-size:12px;font-weight:800;
+  white-space:normal;overflow-wrap:anywhere;
+}
+.tag.blue,.box.blue{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.tag.green,.box.green{background:#ecfdf3;border-color:#bbf7d0;color:#047857}
+.tag.orange,.box.orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.tag.red,.box.red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.tag.purple,.box.purple{background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9}
+.tag.teal,.box.teal{background:#f0fdfa;border-color:#99f6e4;color:#0f766e}
+.card,.dept,.strategy,.map-card,.value,.scene,.qa-item,.panel,.chain-col,.stage,.eco,.gloss-card,.node,.hub,.control-card,.table-wrap,.sidebox .card{
+  border:1px solid var(--line);background:#fff;border-radius:18px;
+}
+.card{padding:16px}
+.card h3{margin-bottom:10px}
+.why-list{margin:0;padding-left:18px;font-size:14px;color:#344054}
+.why-list li{margin:6px 0}
+.footer,.footer-note,.foot{color:var(--muted);font-size:12px;text-align:right;margin-top:12px}
+
+/* Module 1: flow diagrams */
+.chain-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.chain-col{overflow:hidden;background:#fbfdff}
+.chain-col h3{padding:13px 16px;background:#f1f5f9;border-bottom:1px solid var(--line);margin:0}
+.stage{position:relative;margin:14px;padding:15px;background:#fff}
+.stage:not(:last-child)::after{content:"↓";position:absolute;left:50%;bottom:-22px;transform:translateX(-50%);font-size:18px;color:#94a3b8;background:#fff;padding:0 6px}
+.stage ul{margin:0 0 8px;padding-left:18px;font-size:13px;color:#344054}
+.stage li{margin:4px 0}
+.ecosystem{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+.eco{padding:13px;background:#f8fafc}
+.eco p{font-size:12.5px;color:#64748b;margin-top:5px}
+.swim-wrap{overflow:visible}
+.swim{
+  display:grid;
+  grid-template-columns:120px repeat(8,minmax(0,1fr));
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  background:#fff;
+}
+.cell{border-right:1px solid #e5eaf2;border-bottom:1px solid #e5eaf2;padding:8px;min-height:86px;background:#fff;min-width:0}
+.cell:nth-child(9n){border-right:0}
+.cell.head{background:#f1f5f9;font-weight:900;text-align:center;min-height:auto;color:#334155;font-size:12px}
+.lane{background:#f8fafc;font-weight:900;color:#334155;font-size:12px}
+.box{border-radius:10px;padding:8px 9px;margin:4px 0;font-size:12px;line-height:1.38;background:#f8fafc;border:1px solid #e2e8f0;overflow-wrap:anywhere}
+.control{margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.control-card{padding:13px;border-left:4px solid var(--red);background:#fff7f7;font-size:13px}
+.control-card b{display:block;margin-bottom:4px}
+.data-map{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:16px}
+.panel{padding:16px}
+.node{background:#f8fafc;padding:11px;margin:8px 0;font-size:13px}
+.node.risk,.risk{background:#fff7f7;border-color:#fecaca}
+.node.ok,.ok{background:#ecfdf3;border-color:#bbf7d0}
+.hub{background:#eff6ff;border-color:#bfdbfe;padding:16px;text-align:center;margin:8px 0}
+.layers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.arrow-down{text-align:center;color:#94a3b8;font-weight:900;margin:6px 0}
+.gloss-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.gloss-card{padding:16px}
+.term{display:grid;grid-template-columns:90px 1fr;gap:10px;padding:9px 0;border-top:1px solid #eef2f7}
+.term:first-of-type{border-top:0}
+.term b{font-size:12.5px}
+.term span,.small{font-size:12.5px;color:#475569}
+.gloss-note{padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid var(--line);color:#475569;font-size:12.5px;margin-top:14px}
+
+/* Module 2: customer profiles */
+.page{padding:0;margin:0 0 18px;display:block;min-height:auto}
+.content{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;padding:0}
+.left,.right{display:flex;flex-direction:column;gap:12px;min-width:0}
+.features{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.feature{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:8px 10px;
+  font-size:13px;min-width:0;
+}
+.feature span:first-child{font-weight:850;color:#475467;white-space:nowrap}
+.feature span:last-child{font-weight:900;color:#0f172a;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dept-list{display:grid;gap:12px}
+.dept{padding:14px 15px;border-left:5px solid var(--blue);background:#fff}
+.dept:nth-child(2){border-left-color:var(--green)}
+.dept:nth-child(3){border-left-color:var(--orange)}
+.dept:nth-child(4){border-left-color:var(--purple)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px;color:#344054;line-height:1.55}
+.mini b{display:block;margin-bottom:4px;color:#111827}
+.strategy{padding:15px 16px;background:linear-gradient(90deg,#eff6ff,#fff);border-left:5px solid var(--blue)}
+.strategy-body{font-weight:850;color:#1e3a8a;line-height:1.6}
+.value-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.value{padding:16px 17px}
+.value h3{display:inline-flex;align-items:center;min-height:30px;margin:0 0 8px;padding:5px 11px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:18px;font-weight:950;line-height:1.1}
+.value p{margin:0;color:#475467;line-height:1.55}
+.rank{display:none!important}
+.summary-table{table-layout:fixed;width:100%}
+.summary-table th,.summary-table td{vertical-align:top}
+.summary-table th:nth-child(1),.summary-table td:nth-child(1){width:56px;white-space:nowrap}
+.summary-table th:nth-child(2),.summary-table td:nth-child(2){width:180px}
+.summary-table th:nth-child(3),.summary-table td:nth-child(3){width:110px;white-space:nowrap}
+.summary-table th:nth-child(4),.summary-table td:nth-child(4){width:42%;line-height:1.55}
+.summary-table th:nth-child(5),.summary-table td:nth-child(5){width:auto;line-height:1.55}
+.final-quote{font-size:20px;font-weight:950;color:#1e3a8a;background:#eff6ff;border-left:5px solid var(--blue);border-radius:16px;padding:16px;margin-top:14px}
+
+/* Module 3: scene map */
+.nav{
+  display:flex;gap:8px;overflow:auto;padding:10px;margin:0 0 16px;
+  border:1px solid var(--line);background:#fff;border-radius:18px;
+}
+.nav a{white-space:nowrap;text-decoration:none;background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:850;color:#344054}
+.radar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.radar .card{min-height:138px}
+.num{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:8px}
+.radar b{display:block;font-size:16px;margin:6px 0}
+.radar span{font-size:13.5px;color:#667085}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.domain{padding:0;overflow:hidden}
+.domain-head{padding:18px 20px;margin:0;background:linear-gradient(90deg,#f8fafc,#fff)}
+.domain-body{padding:18px;display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px}
+.sidebox{display:grid;gap:16px;align-content:center;align-self:stretch;min-height:100%}
+.signal{background:#eff6ff;border-left:5px solid var(--blue)}
+.signal ul{margin:0;padding-left:18px;color:#344054;font-size:14px}
+.signal li{margin:7px 0}
+.scenes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.scene{padding:16px;display:flex;flex-direction:column;gap:10px;background:#fff;min-height:220px}
+.scene h3{margin:0;font-size:18px}
+.scene p{font-size:14px;color:#344054;line-height:1.65}
+.role{align-self:flex-start;background:#ecfdf3;border-color:#bbf7d0;color:#047857}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.talk{margin-top:auto;background:#f1f6ff;border-left:4px solid var(--blue);padding:11px 12px;border-radius:12px;color:#1e3a8a;font-size:13.5px;line-height:1.55;font-weight:850}
+.talk small{display:block;color:#64748b;font-weight:900;margin-bottom:3px}
+.playbook,.qa{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.qa-item{padding:15px}
+.do{border-left:5px solid var(--green)}
+.dont{border-left:5px solid var(--orange)}
+
+/* Module 4: cluster tables */
+.wrap{padding:0}
+.map-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.map-card{position:relative;padding:16px;background:linear-gradient(180deg,#fff,#fbfdff);min-height:154px;overflow:hidden}
+.map-card:after{content:"";position:absolute;right:-34px;top:-34px;width:90px;height:90px;border-radius:999px;background:rgba(37,99,235,.07)}
+.dot{width:10px;height:10px;border-radius:999px;background:var(--blue);box-shadow:0 0 0 6px rgba(37,99,235,.1);margin-bottom:10px}
+.map-card h3{font-size:18px;margin:0 0 7px}
+.map-card p{font-size:13px;color:#475467;margin:0 0 10px;line-height:1.55}
+.mini-hubs{font-size:12px;color:#1d4ed8;font-weight:850;border-top:1px solid var(--line);padding-top:9px}
+.workspace{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:#f8fafc;border-bottom:1px solid var(--line)}
+.tab{appearance:none;border:1px solid var(--line);background:#fff;color:#344054;padding:9px 13px;border-radius:999px;font-weight:900;cursor:pointer;transition:.15s ease}
+.tab.active{background:linear-gradient(135deg,var(--blue),var(--cyan));border-color:transparent;color:#fff;box-shadow:0 8px 18px rgba(37,99,235,.18)}
+.panel{display:none;border:0;border-radius:0;padding:18px;background:#fff}
+.panel.active{display:block}
+.count{justify-self:end;min-width:92px;text-align:center;border-radius:16px;padding:10px 10px;font-size:28px;line-height:1}
+.count small{display:block;font-size:11px;margin-top:5px;font-weight:800;color:rgba(255,255,255,.86)}
+.hubs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:14px}
+.hubs b{font-size:13px;margin-right:2px}
+.table-wrap{overflow:visible;background:#fff}
+table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:13px}
+th,td{text-align:left;vertical-align:top;padding:12px 11px;border-bottom:1px solid #e5eaf2;line-height:1.45;overflow-wrap:anywhere}
+th{background:#f1f5f9;color:#334155;font-weight:950;font-size:12.5px}
+tbody tr:hover{background:#f8fbff}
+tbody tr:last-child td{border-bottom:0}
+td.name{font-weight:950;color:#0f172a}
+td:nth-child(1){width:18%}
+td:nth-child(2){width:18%;color:#1d4ed8;font-weight:800}
+td:nth-child(3){width:18%;color:#475467}
+td:nth-child(4){width:20%;font-weight:800}
+td:nth-child(5){width:26%}
+
+/* Clean old cover if remains */
+.cover,.hero{display:none!important}
+
+@media(max-width:1320px){
+  .app{grid-template-columns:240px minmax(0,1fr)}
+  .swim{grid-template-columns:112px repeat(8,minmax(88px,1fr))}
+  .box{font-size:11.5px;padding:7px}
+  .cell{padding:7px}
+  .map-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:1100px){
+  .app{display:block}
+  .sidebar{position:relative;height:auto;overflow:visible;padding:18px}
+  .module-nav{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .module-btn{grid-template-columns:1fr;padding:12px}
+  .module-btn .no{display:none}
+  .topbar{display:block}
+  .stats{justify-content:flex-start;margin-top:12px}
+  .chain-wrap,.data-map,.gloss-grid,.content,.domain-body{grid-template-columns:1fr}
+  .ecosystem,.control,.radar,.scenes,.grid-3,.value-grid,.playbook,.qa{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pair{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .content{padding:16px 12px 36px}
+  .module-nav{grid-template-columns:1fr 1fr}
+  .topbar,.section,.sheet{border-radius:18px;padding:16px}
+  .module-head h2,.section-title h2,h2{font-size:24px}
+  .ecosystem,.control,.radar,.scenes,.grid-3,.value-grid,.playbook,.qa,.map-grid{grid-template-columns:1fr}
+  .features{grid-template-columns:1fr}
+  .header,.domain-head,.cluster-head{grid-template-columns:1fr}
+  .priority,.count{justify-self:start}
+  .swim{overflow:auto;display:grid;grid-template-columns:115px repeat(8,150px)}
+  .table-wrap{overflow:auto}
+  table{min-width:900px}
+}
+
+
+/* ===== Post-check UX refinements: workspace layout, hierarchy, readability ===== */
+/* Use a top workspace header instead of a left rail so wide diagrams and customer tables have enough horizontal room. */
+.app{display:block;min-height:100vh;}
+.sidebar{
+  position:sticky;top:0;z-index:50;height:auto;overflow:visible;
+  display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:20px;align-items:center;
+  padding:14px clamp(18px,2.8vw,42px);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(18px);
+  color:var(--ink);border-bottom:1px solid var(--line);box-shadow:0 10px 28px rgba(15,23,42,.06);
+}
+.brand{padding:0;border-bottom:0;margin:0;min-width:0;}
+.brand .kicker{color:#2563eb;opacity:1;font-weight:900;margin-bottom:4px;font-size:11px;}
+.brand h1{color:var(--ink);font-size:22px;margin:0 0 4px;letter-spacing:-.035em;}
+.brand p{color:#64748b;font-size:12.5px;line-height:1.45;}
+.nav-title{display:none;}
+.module-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.module-btn{
+  border-color:var(--line);background:#f8fafc;color:#334155;border-radius:16px;padding:11px 12px;
+  grid-template-columns:32px minmax(0,1fr);box-shadow:none;min-width:0;
+}
+.module-btn:hover{background:#eff6ff;border-color:#bfdbfe;transform:none;}
+.module-btn.active{background:linear-gradient(135deg,#2563eb,#0891b2);color:#fff;border-color:transparent;box-shadow:0 10px 22px rgba(37,99,235,.18)}
+.module-btn .no{background:#fff;color:#2563eb;}
+.module-btn.active .no{background:rgba(255,255,255,.2);color:#fff;}
+.module-btn strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.module-btn span:last-child{color:#64748b;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.module-btn.active span:last-child{color:rgba(255,255,255,.78)}
+.content{padding:24px clamp(18px,3vw,44px) 56px;}
+.topbar{
+  max-width:1620px;margin:0 auto 22px;padding:22px 24px;border-radius:26px;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbff 60%,#eff6ff 100%);
+  border:1px solid #cfe0f4;box-shadow:0 14px 34px rgba(15,23,42,.06);
+}
+.topbar h2{font-size:30px;line-height:1.12;}
+.topbar p{font-size:14.5px;max-width:900px;line-height:1.65;}
+.stat{min-width:118px;padding:12px 14px;border-radius:18px;}
+.stat b{font-size:25px;}
+.stat span{font-size:12px;}
+.module{max-width:1620px;}
+.module-head{padding:18px 20px;margin:0 0 16px;border-left:6px solid var(--blue);background:#fff;border-radius:20px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:0 8px 22px rgba(15,23,42,.045);}
+.module-head h2{font-size:32px;}
+.module-head p{max-width:980px;line-height:1.65;}
+.section,.sheet{padding:24px;border-radius:24px;box-shadow:0 10px 28px rgba(15,23,42,.06);}
+.section>h2,.sheet>.header h2,.domain-head h2,.section-title h2{font-size:29px;letter-spacing:-.035em;}
+.note,.sub,.section-title p,.domain-head p,.cluster-head p{line-height:1.65;}
+
+/* Keep the original swimlane logic but preserve readability. The diagram scrolls only inside its own card when the viewport is too narrow. */
+.swim-wrap{overflow-x:auto;overflow-y:hidden;padding-bottom:4px;}
+.swim{min-width:1360px;grid-template-columns:150px repeat(8, minmax(145px,1fr));overflow:hidden;}
+.cell{padding:10px;min-height:94px;}
+.cell.head{font-size:12.5px;}
+.lane{font-size:12.5px;}
+.box{font-size:12.3px;line-height:1.45;padding:8px 9px;}
+.control-card{font-size:13.5px;line-height:1.58;}
+
+/* Customer profile pages: reduce empty space and make feature rows compact without hiding values. */
+.content{grid-template-columns:340px minmax(0,1fr);gap:18px;}
+.features{grid-template-columns:1fr;gap:7px;}
+.feature{padding:8px 11px;}
+.feature span:first-child{font-size:12.5px;}
+.feature span:last-child{font-size:13px;overflow:visible;text-overflow:clip;}
+.dept{padding:15px 16px;}
+.mini{font-size:14px;line-height:1.62;padding:13px 14px;}
+.strategy{padding:16px 18px;}
+
+/* Scene map: more breathing room and stronger visual hierarchy. */
+.nav{position:sticky;top:88px;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);}
+.domain-body{grid-template-columns:300px minmax(0,1fr);gap:20px;padding:20px;}
+.scenes{gap:18px;}
+.scene{min-height:auto;padding:18px;gap:12px;}
+.scene p{font-size:14.5px;line-height:1.72;}
+.talk{font-size:14px;line-height:1.65;padding:13px 14px;margin-top:4px;}
+.signal ul{font-size:14.3px;line-height:1.6;}
+
+/* Cluster tables: keep tab + list, improve scanability. */
+.tabs{position:sticky;top:88px;z-index:18;background:rgba(248,250,252,.96);backdrop-filter:blur(12px);}
+.table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);}
+table{min-width:1080px;table-layout:fixed;}
+th{position:sticky;top:0;z-index:2;}
+tbody tr:nth-child(even){background:#fbfdff;}
+td.name{font-size:13.5px;}
+
+/* Responsive top navigation */
+@media(max-width:1180px){
+  .sidebar{grid-template-columns:1fr;gap:12px;position:relative;}
+  .module-nav{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .nav,.tabs{top:0;}
+  .content{grid-template-columns:1fr;}
+}
+@media(max-width:760px){
+  .sidebar{padding:16px 12px;}
+  .module-nav{grid-template-columns:1fr 1fr;gap:8px;}
+  .module-btn{grid-template-columns:1fr;padding:10px;}
+  .module-btn .no{display:none;}
+  .topbar{padding:18px;border-radius:20px;}
+  .topbar h2{font-size:25px;}
+  .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+  .stat{min-width:0;}
+  .content{padding:16px 12px 36px;}
+  .section,.sheet{padding:16px;border-radius:20px;}
+  .module-head{padding:15px 16px;}
+  .module-head h2,.section>h2,.sheet>.header h2,.domain-head h2,.section-title h2,h2{font-size:24px;}
+  .swim{min-width:1220px;grid-template-columns:130px repeat(8,136px);}
+  table{min-width:980px;}
+}
+
+
+
+/* ===== Final user requested refinements ===== */
+/* 1. Header title becomes one centered row; module tabs move to the next row. */
+.sidebar{
+  display:block!important;
+  position:sticky!important;
+  top:0!important;
+  z-index:60!important;
+  padding:18px clamp(20px,3vw,48px) 16px!important;
+  background:rgba(255,255,255,.96)!important;
+  backdrop-filter:blur(18px)!important;
+  border-bottom:1px solid var(--line)!important;
+  box-shadow:0 10px 28px rgba(15,23,42,.055)!important;
+  color:var(--ink)!important;
+}
+.brand{
+  text-align:center!important;
+  padding:0 0 14px!important;
+  margin:0!important;
+  border:0!important;
+}
+.brand .kicker,.brand p,.nav-title{display:none!important;}
+.brand h1{
+  margin:0!important;
+  color:var(--ink)!important;
+  font-size:28px!important;
+  line-height:1.18!important;
+  font-weight:950!important;
+  letter-spacing:-.04em!important;
+}
+.module-nav{
+  max-width:1420px!important;
+  margin:0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+.module-btn{
+  min-height:58px!important;
+  padding:12px 14px!important;
+  border-radius:16px!important;
+}
+.module-btn strong{font-size:14px!important;}
+.module-btn span:last-child{font-size:11.5px!important;}
+
+/* 2. Remove the duplicated dashboard/stat block below the navigation. */
+.topbar{display:none!important;}
+.content{padding-top:24px!important;}
+
+/* 3. Give section introductions and legends more breathing room. */
+.section>h2{
+  margin-bottom:12px!important;
+}
+.section .note{
+  max-width:980px!important;
+  line-height:1.75!important;
+  margin:0 0 16px!important;
+  font-size:14px!important;
+}
+.legend{
+  gap:10px!important;
+  margin:12px 0 22px!important;
+  padding:2px 0!important;
+}
+.tag,.pill,.chip,.hero-tag,.role,.meta span,.hubs span{
+  line-height:1.2!important;
+}
+.tag{
+  padding:7px 12px!important;
+  font-size:12.5px!important;
+}
+
+/* Keep inner sticky bars below the taller two-row header. */
+.nav,.tabs{top:132px!important;}
+
+@media(max-width:1180px){
+  .sidebar{position:relative!important;padding:16px 14px!important;}
+  .brand h1{font-size:24px!important;}
+  .module-nav{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .nav,.tabs{top:0!important;}
+}
+@media(max-width:760px){
+  .brand{padding-bottom:12px!important;}
+  .brand h1{font-size:22px!important;}
+  .module-nav{grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .module-btn{min-height:auto!important;padding:10px!important;}
+  .module-btn strong{font-size:13px!important;}
+  .module-btn span:last-child{font-size:11px!important;}
+}
+
+
+/* ===== Final centering fix ===== */
+/* The class name .content is also used inside customer-profile cards.
+   Force only the outer <main> to behave as a centered page container. */
+main.content{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:28px clamp(24px,4vw,72px) 64px!important;
+}
+main.content .module{
+  width:min(1620px,100%)!important;
+  max-width:1620px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+main.content .module-head,
+main.content .section,
+main.content .sheet{
+  width:100%!important;
+}
+/* Keep the customer-profile internal two-column layout intact. */
+.sheet > .content{
+  display:grid!important;
+  grid-template-columns:340px minmax(0,1fr)!important;
+  gap:18px!important;
+  padding:0!important;
+}
+@media(max-width:1180px){
+  main.content{padding:20px 18px 48px!important;}
+  .sheet > .content{grid-template-columns:1fr!important;}
+}
+@media(max-width:760px){
+  main.content{padding:16px 12px 40px!important;}
+}
+
+
+
+/* User refinement: move the "why it closes" block to the bottom of each customer profile page to fill the lower canvas and reduce left-column crowding. */
+#m2 .page{margin-bottom:22px;}
+#m2 .sheet{padding:24px 26px 22px;}
+#m2 .content{
+  display:grid;
+  grid-template-columns:300px minmax(0,1fr);
+  gap:14px 18px;
+  align-items:start;
+}
+#m2 .left{gap:12px;}
+#m2 .right{gap:12px;}
+#m2 .dept-list{gap:12px;}
+#m2 .dept{padding:14px 16px;}
+#m2 .pair{gap:12px;}
+#m2 .mini{padding:12px 14px;line-height:1.55;}
+#m2 .strategy{padding:15px 18px;}
+#m2 .why-full{
+  grid-column:1 / -1;
+  margin-top:0;
+  padding:18px 20px;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+  border:1.5px solid var(--line);
+  border-radius:18px;
+  box-shadow:none;
+}
+#m2 .why-full h3{
+  margin:0 0 12px;
+  font-size:17px;
+  font-weight:950;
+  color:#0f172a;
+}
+#m2 .why-full .why-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+#m2 .why-full .why-list li{
+  margin:0;
+  padding:12px 16px 12px 40px;
+  border:1px solid #dbe6f4;
+  border-radius:14px;
+  background:#f8fafc;
+  color:#344054;
+  line-height:1.58;
+  position:relative;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+}
+#m2 .why-full .why-list li::before{
+  content:"✓";
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:17px;
+  height:17px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#e0ecff;
+  color:#1d4ed8;
+  font-size:11px;
+  font-weight:950;
+  flex:0 0 auto;
+}
+@media(max-width:1180px){
+  #m2 .content{grid-template-columns:1fr;}
+  #m2 .why-full{grid-column:auto;}
+  #m2 .why-full .why-list{grid-template-columns:1fr;}
+}
+
+@media(max-width:980px){.sidebox{align-content:start;min-height:auto}}
+
+
+/* ===== Module 4 cluster layout refinement: clearer hierarchy and no overlap ===== */
+.module-panel#m4 .section-title{margin-bottom:18px;}
+.module-panel#m4 .section-title p{font-size:14px;line-height:1.5;margin-top:8px;color:#667085;}
+.module-panel#m4 .workspace{overflow:hidden;}
+.module-panel#m4 .tabs{
+  padding:16px 18px;
+  gap:10px;
+  background:#ffffff;
+  border-bottom:1px solid #e5eaf2;
+  position:relative;
+  z-index:2;
+}
+.module-panel#m4 .tab{padding:9px 16px;}
+.module-panel#m4 .panel{padding:22px 22px 20px;}
+.module-panel#m4 .cluster-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 116px;
+  gap:28px;
+  align-items:center;
+  margin:0 0 18px;
+  padding:8px 4px 4px;
+}
+.module-panel#m4 .cluster-head h2{
+  font-size:25px;
+  line-height:1.25;
+  margin:0 0 10px;
+  letter-spacing:-.025em;
+}
+.module-panel#m4 .cluster-head p{
+  margin:0;
+  line-height:1.65;
+  color:#475467;
+  max-width:980px;
+}
+.module-panel#m4 .count{
+  justify-self:end;
+  align-self:center;
+  min-width:104px;
+  height:74px;
+  padding:12px 10px;
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:3;
+  box-shadow:0 12px 24px rgba(37,99,235,.18);
+}
+.module-panel#m4 .hubs{
+  margin:0 0 18px;
+  padding:13px 14px;
+  gap:10px;
+  align-items:center;
+  position:relative;
+  z-index:1;
+}
+.module-panel#m4 .hubs b{flex:0 0 auto;margin-right:6px;}
+.module-panel#m4 .hubs span{line-height:1.35;padding:7px 12px;}
+.module-panel#m4 .table-wrap{border:1px solid #d7e1ef;border-radius:18px;overflow:hidden;}
+.module-panel#m4 table{font-size:13px;}
+@media(max-width:900px){
+  .module-panel#m4 .cluster-head{grid-template-columns:1fr;gap:12px;}
+  .module-panel#m4 .count{justify-self:start;width:104px;}
+}
+
+</style>
+<style>
+/* User-tuned radar section: compact badge, looser vertical rhythm, keyword pills instead of numbers */
+#overview .section-title{
+  display:block;
+  padding-bottom:18px;
+  margin-bottom:22px;
+}
+#overview .section-title h2{
+  margin-bottom:10px;
+}
+#overview .section-title p{
+  margin:0 0 14px;
+  line-height:1.75;
+}
+#overview .section-title .badge{
+  display:inline-flex;
+  width:auto;
+  max-width:max-content;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  line-height:1;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  box-shadow:none;
+}
+#overview .radar{
+  gap:14px;
+}
+#overview .radar .radar-card{
+  min-height:150px;
+  padding:20px 18px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:14px;
+}
+#overview .radar .num{
+  width:auto;
+  height:auto;
+  min-height:32px;
+  max-width:100%;
+  padding:8px 13px;
+  margin:0;
+  border-radius:12px;
+  font-size:14px;
+  line-height:1.15;
+  white-space:normal;
+  text-align:left;
+}
+#overview .radar .radar-desc{
+  display:block;
+  color:#475467;
+  font-size:14.5px;
+  line-height:1.85;
+}
+@media(max-width:1180px){
+  #overview .radar{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:720px){
+  #overview .radar{grid-template-columns:1fr;}
+  #overview .radar .radar-card{min-height:auto;}
+}
+</style>
+<style>
+/* Final fix: radar keyword pills use white text and are centered within each card */
+#overview .radar .radar-card{
+  align-items:center !important;
+  text-align:center !important;
+}
+#overview .radar .num{
+  color:#ffffff !important;
+  background:linear-gradient(135deg,var(--blue),var(--cyan)) !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  align-self:center !important;
+  font-weight:900 !important;
+  box-shadow:0 8px 18px rgba(37,99,235,.18) !important;
+}
+#overview .radar .radar-desc{
+  text-align:left !important;
+  width:100% !important;
+}
+
+
+/* User-tuned playbook title: compact label, looser header rhythm */
+#playbook .playbook-title{
+  display:block;
+  padding-bottom:18px;
+  margin-bottom:22px;
+}
+#playbook .playbook-title h2{
+  margin:0 0 18px;
+  line-height:1.28;
+}
+#playbook .playbook-title .badge{
+  display:inline-flex;
+  width:auto;
+  max-width:max-content;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  line-height:1;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  box-shadow:none;
+}
+#playbook .qa-item b{
+  margin-right:4px;
+}
+
+
+/* ===== User fix: cluster panel hierarchy ===== */
+.module-panel#m4 .workspace{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  padding:0;
+}
+.module-panel#m4 .tabs{
+  order:0;
+  position:static!important;
+  top:auto!important;
+  z-index:1;
+  padding:18px 22px 16px;
+  gap:12px;
+  background:#fff;
+  border-bottom:1px solid #e5eaf2;
+}
+.module-panel#m4 .tab{
+  min-height:38px;
+  padding:9px 18px;
+  line-height:1.1;
+}
+.module-panel#m4 .panel{
+  order:1;
+  padding:0 22px 22px;
+  background:#fff;
+}
+.module-panel#m4 .cluster-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 112px;
+  gap:24px;
+  align-items:center;
+  margin:0;
+  padding:24px 4px 18px;
+  border-bottom:0;
+}
+.module-panel#m4 .cluster-head h2{
+  margin:0;
+  font-size:26px;
+  line-height:1.25;
+}
+.module-panel#m4 .cluster-head p{
+  display:none!important;
+}
+.module-panel#m4 .count{
+  align-self:center;
+  justify-self:end;
+  width:104px;
+  min-width:104px;
+  height:68px;
+  margin:0;
+  position:static;
+}
+.module-panel#m4 .hubs{
+  margin:0 0 18px;
+  padding:13px 14px;
+  gap:10px;
+  align-items:center;
+  clear:both;
+}
+.module-panel#m4 .table-wrap{
+  margin-top:0;
+}
+@media(max-width:900px){
+  .module-panel#m4 .tabs{padding:14px;gap:8px;}
+  .module-panel#m4 .panel{padding:0 14px 16px;}
+  .module-panel#m4 .cluster-head{grid-template-columns:1fr;gap:12px;padding:18px 2px 14px;}
+  .module-panel#m4 .count{justify-self:start;height:58px;}
+}
+</style>
+<style>
+/* ===== Final structural fix for module 4: tabs/title/hubs hierarchy ===== */
+.module-panel#m4 .workspace{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  padding:0;
+}
+.module-panel#m4 .panel{
+  padding:0 22px 22px !important;
+  background:#fff;
+}
+.module-panel#m4 .panel:not(.active){display:none!important;}
+.module-panel#m4 .panel.active{display:block!important;}
+.module-panel#m4 .panel > .tabs{
+  display:flex !important;
+  flex-wrap:wrap;
+  gap:12px;
+  position:static !important;
+  top:auto !important;
+  z-index:1;
+  padding:22px 0 20px !important;
+  margin:0 0 24px !important;
+  background:#fff !important;
+  border-bottom:1px solid #e5eaf2;
+}
+.module-panel#m4 .panel > .tabs .tab{
+  min-height:38px;
+  padding:9px 18px;
+  border-radius:999px;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.module-panel#m4 .cluster-head{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 112px !important;
+  gap:24px !important;
+  align-items:center !important;
+  margin:0 0 20px !important;
+  padding:0 2px !important;
+  border:0 !important;
+}
+.module-panel#m4 .cluster-head h2{
+  margin:0 !important;
+  font-size:26px !important;
+  line-height:1.28 !important;
+  letter-spacing:-.025em;
+}
+.module-panel#m4 .cluster-head p{display:none!important;}
+.module-panel#m4 .count{
+  justify-self:end !important;
+  align-self:center !important;
+  width:104px !important;
+  min-width:104px !important;
+  height:68px !important;
+  margin:0 !important;
+  position:static !important;
+  z-index:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:18px !important;
+}
+.module-panel#m4 .hubs{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:10px !important;
+  align-items:center !important;
+  margin:0 0 22px !important;
+  padding:13px 14px !important;
+  background:#f8fafc !important;
+  border:1px solid #d7e1ef !important;
+  border-radius:16px !important;
+  clear:none !important;
+}
+.module-panel#m4 .hubs b{flex:0 0 auto;margin-right:6px;}
+.module-panel#m4 .hubs span{line-height:1.35;padding:7px 12px;}
+.module-panel#m4 .table-wrap{margin-top:0 !important;border-radius:18px;}
+@media(max-width:900px){
+  .module-panel#m4 .panel{padding:0 14px 16px!important;}
+  .module-panel#m4 .panel > .tabs{padding:16px 0!important;margin-bottom:18px!important;gap:8px;}
+  .module-panel#m4 .cluster-head{grid-template-columns:1fr!important;gap:14px!important;margin-bottom:18px!important;}
+  .module-panel#m4 .count{justify-self:start!important;height:58px!important;}
+}
+</style>
+<style>
+/* ===== HARD FIX: Module 4 cluster header visual order =====
+   Goal: inside each region panel, render as:
+   1) region tabs
+   2) region title + count
+   3) hubs
+   4) enterprise table
+*/
+.module-panel#m4 .workspace{
+  padding:0 !important;
+  overflow:visible !important;
+  background:#fff !important;
+  border:1px solid var(--line) !important;
+  border-radius:24px !important;
+}
+.module-panel#m4 .panel{
+  padding:22px 22px 24px !important;
+  background:#fff !important;
+  border:0 !important;
+  border-radius:24px !important;
+}
+.module-panel#m4 .panel:not(.active){display:none !important;}
+.module-panel#m4 .panel.active{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-areas:
+    "region-tabs"
+    "region-head"
+    "region-hubs"
+    "region-table" !important;
+  row-gap:18px !important;
+}
+.module-panel#m4 .panel > nav.tabs{
+  grid-area:region-tabs !important;
+  order:0 !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  gap:10px !important;
+  position:static !important;
+  top:auto !important;
+  z-index:auto !important;
+  padding:0 0 18px !important;
+  margin:0 !important;
+  background:#fff !important;
+  border:0 !important;
+  border-bottom:1px solid #e5eaf2 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+.module-panel#m4 .panel > nav.tabs .tab{
+  flex:0 0 auto !important;
+  min-height:36px !important;
+  padding:9px 16px !important;
+  border-radius:999px !important;
+  white-space:nowrap !important;
+  font-size:13px !important;
+}
+.module-panel#m4 .panel > .cluster-head{
+  grid-area:region-head !important;
+  order:1 !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 112px !important;
+  gap:22px !important;
+  align-items:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:#fff !important;
+}
+.module-panel#m4 .panel > .cluster-head h2{
+  margin:0 !important;
+  font-size:26px !important;
+  line-height:1.28 !important;
+  letter-spacing:-.025em !important;
+}
+.module-panel#m4 .panel > .cluster-head p{display:none !important;}
+.module-panel#m4 .panel > .cluster-head .count{
+  justify-self:end !important;
+  align-self:center !important;
+  width:104px !important;
+  min-width:104px !important;
+  min-height:64px !important;
+  height:auto !important;
+  padding:10px 10px !important;
+  margin:0 !important;
+  position:static !important;
+  z-index:1 !important;
+  overflow:visible !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:16px !important;
+  background:linear-gradient(135deg,var(--blue),var(--cyan)) !important;
+  color:#fff !important;
+}
+.module-panel#m4 .panel > .cluster-head .count small{
+  color:rgba(255,255,255,.88) !important;
+  font-size:11px !important;
+  line-height:1.2 !important;
+}
+.module-panel#m4 .panel > .hubs{
+  grid-area:region-hubs !important;
+  order:2 !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin:0 !important;
+  padding:12px 14px !important;
+  background:#f8fafc !important;
+  border:1px solid #d7e1ef !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+}
+.module-panel#m4 .panel > .hubs b{
+  flex:0 0 auto !important;
+  margin-right:4px !important;
+  color:#0f172a !important;
+}
+.module-panel#m4 .panel > .hubs span{
+  line-height:1.35 !important;
+  padding:7px 12px !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  border:1px solid #e5eaf2 !important;
+}
+.module-panel#m4 .panel > .table-wrap{
+  grid-area:region-table !important;
+  order:3 !important;
+  margin:0 !important;
+  border-radius:18px !important;
+  overflow:auto !important;
+}
+@media(max-width:900px){
+  .module-panel#m4 .panel{padding:16px !important;}
+  .module-panel#m4 .panel.active{row-gap:14px !important;}
+  .module-panel#m4 .panel > .cluster-head{grid-template-columns:1fr !important;}
+  .module-panel#m4 .panel > .cluster-head .count{justify-self:start !important; min-height:56px !important;}
+}
+</style>
+<script>
+// Hard structural guard: keep Module 4 panel children in the intended sequence even if older generated CSS/HTML remains.
+(function(){
+
+  // Scene domain tabs in m3
+  (function(){
+    var root=document.querySelector('#m3');
+    if(!root) return;
+    var tabs=root.querySelectorAll('.scene-domain-nav button');
+    var panels=root.querySelectorAll('.scene-domain-panel');
+    tabs.forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var id=btn.dataset.sceneDomain;
+        tabs.forEach(function(b){ b.classList.toggle('active', b===btn); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.id===id); });
+      });
+    });
+  })();
+
+  function enforceClusterOrder(){
+    document.querySelectorAll('.module-panel#m4 .panel').forEach(function(panel){
+      var tabs = panel.querySelector(':scope > nav.tabs');
+      var head = panel.querySelector(':scope > .cluster-head');
+      var hubs = panel.querySelector(':scope > .hubs');
+      var table = panel.querySelector(':scope > .table-wrap');
+      [tabs, head, hubs, table].filter(Boolean).forEach(function(node){ panel.appendChild(node); });
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enforceClusterOrder);
+  else enforceClusterOrder();
+})();
+</script>
+<style>
+/* ===== Isolated Module 4 region layout: no shared .tabs/.panel collision ===== */
+#m4 .jh-region-workspace{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:22px;
+  overflow:hidden;
+}
+#m4 .jh-region-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:0 0 18px;
+  margin:0 0 22px;
+  border-bottom:1px solid #e5eaf2;
+  background:#fff;
+  position:static;
+}
+#m4 .jh-region-tab{
+  appearance:none;
+  border:1px solid #d7e1ef;
+  background:#f8fafc;
+  color:#344054;
+  border-radius:999px;
+  padding:10px 18px;
+  font-size:13px;
+  line-height:1;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.18s ease;
+}
+#m4 .jh-region-tab:hover{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8;}
+#m4 .jh-region-tab.active{background:linear-gradient(135deg,var(--blue),var(--cyan));border-color:transparent;color:#fff;box-shadow:0 10px 20px rgba(37,99,235,.18);}
+#m4 .jh-region-panel{display:none;}
+#m4 .jh-region-panel.active{display:block;}
+#m4 .jh-region-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 112px;
+  align-items:center;
+  gap:24px;
+  margin:0 0 18px;
+}
+#m4 .jh-region-head h3{
+  margin:0;
+  font-size:26px;
+  line-height:1.28;
+  letter-spacing:-.025em;
+  color:var(--ink);
+  font-weight:950;
+}
+#m4 .jh-region-count{
+  justify-self:end;
+  width:104px;
+  min-height:68px;
+  border-radius:17px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 12px 24px rgba(37,99,235,.18);
+}
+#m4 .jh-region-count strong{font-size:31px;line-height:1;font-weight:950;}
+#m4 .jh-region-count span{font-size:11px;line-height:1.2;margin-top:5px;color:rgba(255,255,255,.88);font-weight:850;}
+#m4 .jh-region-hubs{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+  margin:0 0 18px;
+  padding:12px 14px;
+  border:1px solid #d7e1ef;
+  border-radius:16px;
+  background:#f8fafc;
+}
+#m4 .jh-region-hubs b{flex:0 0 auto;margin-right:4px;font-size:13px;color:#0f172a;}
+#m4 .jh-region-hubs span{display:inline-flex;align-items:center;border:1px solid #e5eaf2;background:#fff;border-radius:999px;padding:7px 12px;font-size:12.5px;line-height:1.35;color:#344054;font-weight:750;}
+#m4 .jh-region-table-wrap{border:1px solid #d7e1ef;border-radius:18px;overflow:auto;background:#fff;}
+#m4 .jh-region-table{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;font-size:13px;}
+#m4 .jh-region-table th,#m4 .jh-region-table td{text-align:left;vertical-align:top;padding:13px 14px;border-bottom:1px solid #e5eaf2;line-height:1.5;}
+#m4 .jh-region-table th{position:sticky;top:0;background:#f1f5f9;color:#334155;font-size:13px;font-weight:900;z-index:1;}
+#m4 .jh-region-table tbody tr:nth-child(even){background:#fbfdff;}
+#m4 .jh-region-table tbody tr:hover{background:#f8fbff;}
+#m4 .jh-region-table tbody tr:last-child td{border-bottom:none;}
+#m4 .jh-region-table td.name{font-weight:900;color:#0f172a;min-width:156px;}
+#m4 .jh-region-table td:nth-child(2){color:#1d4ed8;font-weight:750;}
+#m4 .jh-region-table td:nth-child(4){font-weight:750;}
+@media(max-width:900px){
+  #m4 .jh-region-workspace{padding:16px;}
+  #m4 .jh-region-tabs{gap:8px;margin-bottom:16px;padding-bottom:14px;}
+  #m4 .jh-region-tab{padding:9px 13px;}
+  #m4 .jh-region-head{grid-template-columns:1fr;gap:12px;}
+  #m4 .jh-region-count{justify-self:start;min-height:58px;}
+}
+</style>
+
+<style id="swimlane-lane-alignment-fix">
+/* 业务流图：左侧职能列文字纵向居中、横向左对齐 */
+.swim .cell.lane{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  text-align:left !important;
+  line-height:1.45 !important;
+  padding-left:14px !important;
+  padding-right:12px !important;
+}
+
+/* RPA 场景地图：Tab 页签切换场景域 */
+#m3 .scene-domain-nav{
+  width:100%;
+  margin:0 0 14px;
+  display:flex;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:6px 0;
+}
+#m3 .scene-domain-nav button{
+  appearance:none;
+  border:1px solid #d7e1ef;
+  background:#f8fafc;
+  color:#344054;
+  border-radius:999px;
+  padding:9px 16px;
+  font-size:13px;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:.18s ease;
+}
+#m3 .scene-domain-nav button:hover{
+  border-color:#93c5fd;
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+#m3 .scene-domain-nav button.active{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 9px 18px rgba(37,99,235,.18);
+}
+#m3 .scene-domain-panel{display:none;}
+#m3 .scene-domain-panel.active{display:block;}
+#m3 .scene-domain-panel.active .sheet{margin-bottom:0;}
+@media(max-width:760px){
+  #m3 .scene-domain-nav{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:8px 0;}
+  #m3 .scene-domain-nav button{padding:8px 13px;font-size:12px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="nav-title">核心模块</div>
+<div class="module-nav">
+<button class="module-btn active" data-module="m1"><span class="no">01</span><span><strong>行业入门</strong><span>产业链 / 业务流 / 数据流</span></span></button>
+<button class="module-btn" data-module="m2"><span class="no">02</span><span><strong>目标客户画像</strong><span>六类客户 / 切入部门</span></span></button>
+<button class="module-btn" data-module="m3"><span class="no">03</span><span><strong>RPA 场景地图</strong><span>痛点 / 话术 / 打法</span></span></button>
+<button class="module-btn" data-module="m4"><span class="no">04</span><span><strong>客户在哪里</strong><span>区域集群 / 企业列表</span></span></button>
+</div>
+</aside>
+<main class="content">
+<section class="module active" id="m1">
+<div class="module-head"><div><h2>行业入门：先理解行业如何运转</h2><p>用产业链、业务流、数据流三张图快速理解医药行业如何运转，并识别高价值自动化切入点。</p></div></div>
+<section class="section">
+<h2>一、产业链图：药品全生命周期价值链</h2>
+<p class="note">核心判断：医药产业链不是单纯“研发→生产→销售”，而是“科学证据、质量体系、监管许可、商业准入、患者安全”共同驱动的价值链。</p>
+<div class="legend"><span class="tag blue">科学与临床证据</span><span class="tag green">生产质量体系</span><span class="tag orange">商业与支付</span><span class="tag red">监管与合规</span><span class="tag purple">外部协作生态</span></div>
+<div class="chain-wrap">
+<div class="chain-col">
+<h3>上游：研发与注册</h3>
+<div class="stage"><h4>1. 疾病/靶点/立项</h4><ul><li>疾病领域、未满足临床需求、竞品格局</li><li>靶点识别、验证、专利/FTO初筛</li><li>立项评审：科学可行性、商业价值、法规路径</li></ul><span class="pill">研发</span><span class="pill">医学</span><span class="pill">BD</span></div>
+<div class="stage"><h4>2. 药物发现与临床前</h4><ul><li>分子设计、先导化合物优化、候选药物确定</li><li>药效、药代、毒理、安全药理、处方设计</li><li>CMC早期开发、分析方法、稳定性研究</li></ul><span class="pill">CRO</span><span class="pill">GLP</span><span class="pill">CMC</span></div>
+<div class="stage"><h4>3. 临床开发与注册</h4><ul><li>IND/临床试验申请、I/II/III期临床</li><li>伦理、中心、受试者、EDC、SAE/AE管理</li><li>NDA/BLA/MAA申报、审评、核查、上市许可</li></ul><span class="pill">GCP</span><span class="pill">CDE/NMPA</span><span class="pill">eCTD</span></div>
+</div>
+<div class="chain-col">
+<h3>中游：生产与供应</h3>
+<div class="stage"><h4>4. 工艺放大与技术转移</h4><ul><li>从实验室工艺转向中试/商业化工艺</li><li>工艺验证、清洁验证、分析方法验证</li><li>技术转移到自有工厂或CDMO/CMO</li></ul><span class="pill">MSAT</span><span class="pill">验证</span><span class="pill">变更控制</span></div>
+<div class="stage"><h4>5. GMP生产与质量放行</h4><ul><li>供应商准入、物料采购、排产、生产、包装</li><li>批记录、偏差、OOS/OOT、CAPA、变更</li><li>QC检验、QA审核、QP/质量负责人放行</li></ul><span class="pill">ERP</span><span class="pill">MES</span><span class="pill">QMS</span><span class="pill">LIMS</span></div>
+<div class="stage"><h4>6. 仓储物流与追溯</h4><ul><li>成品入库、批号/有效期/序列化管理</li><li>冷链/温控、运输调度、签收、退货</li><li>全程追溯、召回演练与召回执行</li></ul><span class="pill">WMS</span><span class="pill">TMS</span><span class="pill">GSP</span></div>
+</div>
+<div class="chain-col">
+<h3>下游：准入、销售与患者安全</h3>
+<div class="stage"><h4>7. 市场准入与支付</h4><ul><li>医保/商保策略、药物经济学、真实世界证据</li><li>招采、挂网、集采、价格与准入材料</li><li>院内准入、药事会、目录维护</li></ul><span class="pill">Market Access</span><span class="pill">HEOR</span><span class="pill">招采</span></div>
+<div class="stage"><h4>8. 商业化与终端触达</h4><ul><li>医院销售、DTP/零售药房、院外处方、电商</li><li>经销商/批发商管理、订单、发票、回款</li><li>学术推广、销售代表合规、价格与渠道监控</li></ul><span class="pill">CRM/SFE</span><span class="pill">OMS</span><span class="pill">财务</span></div>
+<div class="stage"><h4>9. 上市后安全与生命周期管理</h4><ul><li>ADR/AE收集、信号检测、PSUR/PBRER</li><li>说明书变更、风险控制、再评价、召回</li><li>新适应症、真实世界研究、产品组合管理</li></ul><span class="pill">PV</span><span class="pill">RWE</span><span class="pill">LMS</span></div>
+</div>
+</div>
+<div class="ecosystem">
+<div class="eco"><b>监管方</b><p>NMPA/CDE、地方药监、医保/招采平台、药物警戒中心等。</p></div>
+<div class="eco"><b>外部服务方</b><p>CRO、SMO、CDMO/CMO、第三方检测、第三方物流、咨询机构。</p></div>
+<div class="eco"><b>医疗与渠道方</b><p>医院、研究中心、药房、DTP、批发商、经销商、电商平台。</p></div>
+<div class="eco"><b>患者与支付方</b><p>患者/消费者、医保、商保、慈善援助、患者管理平台。</p></div>
+</div>
+</section>
+<section class="section">
+<h2>二、业务流图：跨部门端到端闭环</h2>
+<p class="note">读图方式：横向看药品生命周期，纵向看部门协同；红色代表合规/质量控制点，是销售切入流程自动化、智能审核和风险预警的优先位置。</p>
+<div class="swim">
+<div class="cell head">职能/阶段</div><div class="cell head">立项/发现</div><div class="cell head">临床前</div><div class="cell head">临床</div><div class="cell head">注册</div><div class="cell head">生产质量</div><div class="cell head">供应流通</div><div class="cell head">准入销售</div><div class="cell head">上市后</div>
+<div class="cell lane">战略 / BD / 项目管理</div><div class="cell"><div class="box purple">立项评审、竞品/专利/适应症分析</div></div><div class="cell"><div class="box purple">CRO/CDMO遴选、合同与里程碑管理</div></div><div class="cell"><div class="box purple">项目进度、预算、中心资源协调</div></div><div class="cell"><div class="box purple">上市路径、优先审评/突破性疗法策略</div></div><div class="cell"><div class="box purple">自建产能 vs 委外生产决策</div></div><div class="cell"><div class="box purple">经销网络与服务商评估</div></div><div class="cell"><div class="box purple">商业化计划、准入节奏、渠道布局</div></div><div class="cell"><div class="box purple">生命周期管理、适应症拓展、退出决策</div></div>
+<div class="cell lane">研发 / 医学 / 临床运营</div><div class="cell"><div class="box blue">靶点验证、候选物筛选、实验记录</div></div><div class="cell"><div class="box blue">药效/药代/毒理、CMC早期研究</div></div><div class="cell"><div class="box blue">方案设计、伦理、中心启动、入组、监查</div></div><div class="cell"><div class="box blue">临床总结、医学问询回复</div></div><div class="cell"><div class="box green">工艺转移、处方/工艺持续优化</div></div><div class="cell"><div class="box orange">医学信息支持、冷链/特殊用药要求</div></div><div class="cell"><div class="box orange">学术推广、KOL沟通、医学教育</div></div><div class="cell"><div class="box blue">RWE、PASS、再评价研究</div></div>
+<div class="cell lane">注册 / 法规 / 合规</div><div class="cell"><div class="box red">专利/FTO、数据来源合规</div></div><div class="cell"><div class="box red">GLP、申报资料源数据一致性</div></div><div class="cell"><div class="box red">GCP、伦理、知情同意、稽查准备</div></div><div class="cell"><div class="box red">eCTD资料、递交、发补、审评、核查</div></div><div class="cell"><div class="box red">GMP检查、变更/偏差/CAPA、数据完整性</div></div><div class="cell"><div class="box red">GSP、渠道资质、运输温控、追溯</div></div><div class="cell"><div class="box red">反商业贿赂、合规拜访、价格合规</div></div><div class="cell"><div class="box red">PV合规、监管报告、说明书/标签变更</div></div>
+<div class="cell lane">生产 / 质量 / 供应链</div><div class="cell"><div class="box">样品、试剂、实验物料管理</div></div><div class="cell"><div class="box green">试验用药制备、稳定性样品</div></div><div class="cell"><div class="box green">临床试验用药供应与回收</div></div><div class="cell"><div class="box green">注册批/工艺验证批准备</div></div><div class="cell"><div class="box green">采购→排产→生产→包装→检验→放行</div></div><div class="cell"><div class="box green">入库→拣配→冷链配送→签收→退货</div></div><div class="cell"><div class="box orange">库存分配、缺货预警、终端补货</div></div><div class="cell"><div class="box red">召回、投诉、质量趋势回顾</div></div>
+<div class="cell lane">商业 / 财务 / 客户运营</div><div class="cell"><div class="box">投资测算、市场规模与价格假设</div></div><div class="cell"><div class="box">供应商付款、研发费用归集</div></div><div class="cell"><div class="box">中心合同、研究者费、报销合规</div></div><div class="cell"><div class="box">注册费用、上市预算</div></div><div class="cell"><div class="box">成本核算、批次成本、委外结算</div></div><div class="cell"><div class="box orange">订单、发票、对账、回款、信用控制</div></div><div class="cell"><div class="box orange">招采报价、返利/折扣、SFE绩效</div></div><div class="cell"><div class="box">患者服务、续方、用药依从性管理</div></div>
+</div>
+<div class="control">
+<div class="control-card"><b>自动化优先场景 1：资料归集</b>临床/注册/质量文件自动抓取、命名、归档、缺失校验、版本比对。</div>
+<div class="control-card"><b>自动化优先场景 2：资质审查</b>供应商、经销商、采购方、物流方、医院/药店证照有效期监控。</div>
+<div class="control-card"><b>自动化优先场景 3：合规监测</b>温控异常、价格异常、销售拜访异常、处方审核缺失、舆情风险。</div>
+<div class="control-card"><b>自动化优先场景 4：闭环处置</b>偏差/CAPA、投诉、召回、ADR/PV信号从发现到报告的任务流闭环。</div>
+</div>
+</section>
+<section class="section">
+<h2>三、数据流图：从源数据到监管与经营决策</h2>
+<p class="note">专业视角下，医药数据流的关键不是“有没有数据”，而是源数据可追溯、系统间主数据一致、审计追踪完整、监管输出可复核。</p>
+<div class="data-map">
+<div class="panel"><h3>1. 数据源层</h3><div class="node"><b>研发/实验源数据</b><br/><span class="small">靶点、化合物、实验记录、ELN、LIMS、专利、文献。</span></div><div class="node"><b>临床源数据</b><br/><span class="small">方案、中心、受试者、EDC/ePRO、SAE/AE、监查报告、稽查发现。</span></div><div class="node"><b>生产质量源数据</b><br/><span class="small">BOM、MBR/EBR、批记录、检验、偏差、CAPA、变更、验证、放行。</span></div><div class="node"><b>流通商业源数据</b><br/><span class="small">订单、库存、批号、温控、物流、发票、回款、终端动销、价格。</span></div><div class="node"><b>上市后与外部数据</b><br/><span class="small">ADR、投诉、RWE/EHR、医保/招采、政策、舆情、竞品。</span></div></div>
+<div class="panel"><h3>2. 系统与治理层</h3><div class="hub"><b>主数据与合规档案中心</b><br/><span class="small">药品/规格/批号、物料、供应商、客户、机构、人员、渠道、价格、合同、证照。</span></div><div class="layers"><div class="node"><b>研发临床系统</b><br/><span class="small">ELN / LIMS / CTMS / EDC / eTMF</span></div><div class="node"><b>注册系统</b><br/><span class="small">eCTD / RIM / 申报资料库</span></div><div class="node"><b>生产质量系统</b><br/><span class="small">ERP / MES / QMS / LIMS / WMS</span></div><div class="node"><b>商业流通系统</b><br/><span class="small">OMS / TMS / CRM / SFE / 财务 / 追溯</span></div></div><div class="arrow-down">↓</div><div class="node ok"><b>数据治理要求</b><br/><span class="small">唯一编码、权限分级、电子签名、审计追踪、版本控制、数据完整性、接口日志。</span></div></div>
+<div class="panel"><h3>3. 应用输出层</h3><div class="node risk"><b>监管输出</b><br/><span class="small">注册申报、发补回复、GxP检查材料、PV定期报告、召回报告。</span></div><div class="node risk"><b>质量与安全预警</b><br/><span class="small">温控偏离、批次异常、OOS/OOT、偏差趋势、投诉聚类、ADR信号。</span></div><div class="node"><b>经营输出</b><br/><span class="small">库存周转、缺货预测、订单履约、发票回款、渠道价格、销售绩效。</span></div><div class="node"><b>准入与市场输出</b><br/><span class="small">招采价格、院内准入进度、终端动销、患者依从性、竞品动态。</span></div><div class="node risk"><b>审计与内控输出</b><br/><span class="small">资质过期、越权访问、数据篡改风险、商业合规异常、任务逾期。</span></div></div>
+</div>
+</section>
+<section class="section">
+<h2>四、名词释义：系统、缩写与专业术语</h2>
+<p class="note">按“系统名词—缩写—专业术语”组织。销售沟通时建议先确认客户属于研发型药企、生产型药企、流通企业、零售/互联网平台，避免把不同场景的系统和术语混用。</p>
+<div class="gloss-grid">
+<div class="gloss-card"><h3>系统名词</h3>
+<div class="term"><b>ELN</b><span>电子实验记录本，用于记录研发实验过程、结果、版本和签名，替代纸质实验记录。</span></div>
+<div class="term"><b>LIMS</b><span>实验室信息管理系统，管理样品、检验方法、检验结果、复核、报告和实验室资源。</span></div>
+<div class="term"><b>CTMS</b><span>临床试验管理系统，管理临床项目、中心、入组、监查、预算、里程碑和问题追踪。</span></div>
+<div class="term"><b>EDC</b><span>电子数据采集系统，用于临床试验病例报告表数据采集、质疑、锁库和导出。</span></div>
+<div class="term"><b>eTMF</b><span>电子试验主文件系统，集中管理临床试验必备文件，支持稽查和核查。</span></div>
+<div class="term"><b>RIM</b><span>注册信息管理系统，管理产品注册主数据、申报资料、递交流程、变更和监管沟通。</span></div>
+<div class="term"><b>ERP</b><span>企业资源计划系统，管理采购、库存、生产、销售、财务和成本等核心经营数据。</span></div>
+<div class="term"><b>MES</b><span>制造执行系统，连接计划与车间执行，管理生产指令、工序、设备、人员、电子批记录。</span></div>
+<div class="term"><b>QMS</b><span>质量管理系统，管理偏差、CAPA、变更、投诉、培训、审计、供应商质量等质量流程。</span></div>
+<div class="term"><b>WMS/TMS</b><span>仓储/运输管理系统，管理库存、库位、拣配、出入库、配送、温控和签收。</span></div>
+<div class="term"><b>CRM/SFE</b><span>客户关系/销售效能系统，管理客户、拜访、学术活动、销售目标、代表绩效与合规行为。</span></div>
+<div class="term"><b>OMS</b><span>订单管理系统，管理订单接收、审核、分配、发货、退货、发票和履约状态。</span></div>
+</div>
+<div class="gloss-card"><h3>常见缩写</h3>
+<div class="term"><b>NMPA</b><span>国家药品监督管理局，中国药品、医疗器械、化妆品监管机构。</span></div>
+<div class="term"><b>CDE</b><span>国家药监局药品审评中心，承担药品技术审评相关工作。</span></div>
+<div class="term"><b>IND</b><span>新药临床试验申请，获批后可开展相应临床试验。</span></div>
+<div class="term"><b>NDA/BLA</b><span>新药上市申请/生物制品许可申请，用于申请产品上市许可。</span></div>
+<div class="term"><b>GxP</b><span>GMP、GCP、GLP、GSP等规范的统称，强调受监管活动的质量和合规要求。</span></div>
+<div class="term"><b>GMP</b><span>药品生产质量管理规范，覆盖厂房、设备、人员、物料、生产、质量控制和放行。</span></div>
+<div class="term"><b>GCP</b><span>药物临床试验质量管理规范，保护受试者权益并保证临床数据真实可靠。</span></div>
+<div class="term"><b>GLP</b><span>药物非临床研究质量管理规范，适用于安全性评价等非临床研究。</span></div>
+<div class="term"><b>GSP</b><span>药品经营质量管理规范，覆盖药品流通、仓储、运输、销售等环节。</span></div>
+<div class="term"><b>CRO/SMO</b><span>合同研究组织/现场管理组织，分别支持研发临床外包和临床中心现场执行。</span></div>
+<div class="term"><b>CDMO/CMO</b><span>合同研发生产组织/合同生产组织，为药企提供工艺开发、放大和委托生产服务。</span></div>
+<div class="term"><b>PV/ADR/AE/SAE</b><span>药物警戒/药品不良反应/不良事件/严重不良事件，是上市后安全监测核心术语。</span></div>
+</div>
+<div class="gloss-card"><h3>专业术语</h3>
+<div class="term"><b>CMC</b><span>化学、生产与控制，覆盖处方、工艺、质量标准、稳定性、包装和生产控制。</span></div>
+<div class="term"><b>药代动力学</b><span>研究药物在体内吸收、分布、代谢、排泄的规律，常简称ADME。</span></div>
+<div class="term"><b>药效学</b><span>研究药物对机体或病原体的作用及作用机制，关注疗效与剂量关系。</span></div>
+<div class="term"><b>批记录</b><span>记录某一批次从投料、生产、检验到放行的全过程，是质量追溯关键证据。</span></div>
+<div class="term"><b>偏差</b><span>实际执行与批准流程、标准、工艺或预期结果不一致，需要调查和处置。</span></div>
+<div class="term"><b>CAPA</b><span>纠正和预防措施，用于消除已发生问题和潜在风险的根因。</span></div>
+<div class="term"><b>OOS/OOT</b><span>检验结果超标/超趋势，常触发实验室调查、质量调查和批次处置。</span></div>
+<div class="term"><b>变更控制</b><span>对工艺、设备、物料、供应商、质量标准、系统等变化进行评估、批准和验证。</span></div>
+<div class="term"><b>数据完整性</b><span>要求数据真实、准确、完整、一致、可追溯，常用ALCOA+原则进行评价。</span></div>
+<div class="term"><b>审计追踪</b><span>系统自动记录谁在何时做了什么操作，是电子记录可信度的重要基础。</span></div>
+<div class="term"><b>真实世界证据</b><span>基于真实诊疗、医保、随访等数据形成的证据，可用于安全性、有效性和准入支持。</span></div>
+<div class="term"><b>市场准入</b><span>让产品进入医保、招采、医院目录和支付体系的活动，影响销售可及性。</span></div>
+</div>
+</div>
+<div class="gloss-note"><b>备注：</b>若面向医疗器械、医疗服务、互联网医疗或医药零售企业，应在此基础上替换对应监管规则、系统对象和业务术语。</div>
+</section>
+<div class="foot">资料基础：用户上传的医疗健康/医药业务流程白板，原始内容覆盖药物发现、临床前、临床试验、注册审批、生产、流通、销售触达、全流程监管与上市后监测。本版在此基础上按专业药企视角重构为“价值链—业务闭环—数据治理”三张图。</div>
+</section>
+<section class="module" id="m2">
+<div class="module-head"><div><h2>目标客户画像：判断谁值得优先投入</h2><p>按客户类型判断销售优先级、决策特征、典型痛点和首选切入部门。</p></div></div>
+<section class="page"><div class="sheet">
+<div class="header"><div><h2>画像一：大型制药企业</h2><div class="sub">合规最重、场景最多、预算最充足，是医疗健康行业 RPA 的首选客户。</div></div><div class="priority s">优先级 S</div></div>
+<div class="content">
+<aside class="left">
+<div class="card"><h3>典型企业</h3><div class="companies"><span class="pill">恒瑞医药</span><span class="pill">石药集团</span><span class="pill">复星医药</span><span class="pill">科伦药业</span><span class="pill">齐鲁制药</span><span class="pill">华东医药</span><span class="pill">中国生物</span><span class="pill">国药系药企</span></div></div>
+<div class="card"><h3>企业特征</h3><div class="features"><div class="feature"><span>企业规模</span><span>1000 人以上</span></div><div class="feature"><span>系统复杂度</span><span>极高</span></div><div class="feature"><span>自动化预算</span><span>高</span></div><div class="feature"><span>IT 成熟度</span><span>中高</span></div><div class="feature"><span>合规要求</span><span>极高</span></div><div class="feature"><span>数据量</span><span>极大</span></div><div class="feature"><span>决策链</span><span>长</span></div></div></div>
+</aside>
+<main class="right">
+<div class="dept-list"><div class="dept"><h3>QA/QC 质量部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>GMP 文件归档、批记录核查、偏差/CAPA、供应商资质核查、审计追踪。</div><div class="mini"><b>RPA 场景</b>文件自动归档、批记录缺失项核对、CAPA 催办、审计资料汇总导出。</div></div></div><div class="dept"><h3>注册事务部（RA）</h3><div class="pair"><div class="mini"><b>典型痛点</b>注册资料整理、CDE/NMPA 信息跟踪、eCTD 文档管理、海外法规追踪。</div><div class="mini"><b>RPA 场景</b>审评进度抓取、注册台账生成、法规更新同步、申报资料归档。</div></div></div><div class="dept"><h3>药物警戒部（PV）</h3><div class="pair"><div class="mini"><b>典型痛点</b>ADR 收集、SAE 录入、周期性安全报告整理、文献检索。</div><div class="mini"><b>RPA 场景</b>ADR 邮件抓取、安全数据库录入、安全性报告生成、文献更新监控。</div></div></div><div class="dept"><h3>供应链与采购部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>ERP 录单、经销商对账、冷链追踪、库存数据不一致。</div><div class="mini"><b>RPA 场景</b>采购订单录入、库存同步、对账单生成、冷链物流跟踪。</div></div></div></div>
+<div class="strategy"><h3>最佳销售策略</h3><div class="strategy-body">不要先卖“RPA 平台”，先卖一个高价值场景：GMP 文件自动归档、批记录自动核查、ADR 自动录入、注册资料自动整理。</div></div>
+</main>
+<div class="card why-card why-full"><h3>RPA机会点</h3><ul class="why-list"><li>QA/RA/PV 等部门重复操作多，人工错误成本高。</li><li>核心系统改造意愿低，RPA 低侵入优势明显。</li><li>强监管环境下，自动化可提升合规留痕与执行稳定性。</li></ul></div></div>
+</div></section>
+<section class="page"><div class="sheet">
+<div class="header"><div><h2>画像二：医药流通企业</h2><div class="sub">订单、库存、物流、对账密集，ROI 最容易量化。</div></div><div class="priority s">优先级 S</div></div>
+<div class="content">
+<aside class="left">
+<div class="card"><h3>典型企业</h3><div class="companies"><span class="pill">国药控股</span><span class="pill">上药控股</span><span class="pill">九州通</span><span class="pill">华润医药商业</span><span class="pill">区域医药商业公司</span></div></div>
+<div class="card"><h3>企业特征</h3><div class="features"><div class="feature"><span>企业规模</span><span>大型全国/区域网络</span></div><div class="feature"><span>系统复杂度</span><span>高</span></div><div class="feature"><span>自动化预算</span><span>中高</span></div><div class="feature"><span>IT 成熟度</span><span>中</span></div><div class="feature"><span>合规要求</span><span>高</span></div><div class="feature"><span>数据量</span><span>极大</span></div><div class="feature"><span>业务特征</span><span>高频订单 + 高频对账</span></div></div></div>
+</aside>
+<main class="right">
+<div class="dept-list"><div class="dept"><h3>供应链运营部</h3><div class="pair"><div class="mini"><b>典型痛点</b>订单人工录入、多仓库存同步、发货状态跟踪、冷链异常响应。</div><div class="mini"><b>RPA 场景</b>邮件/Excel 订单导入 ERP、库存同步、配送状态抓取、温控异常提醒。</div></div></div><div class="dept"><h3>财务对账部</h3><div class="pair"><div class="mini"><b>典型痛点</b>医院对账、经销商账期、发票校验、银行流水匹配。</div><div class="mini"><b>RPA 场景</b>自动下载对账单、识别差异、生成财务报表、发送邮件通知。</div></div></div><div class="dept"><h3>信息化部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>系统烟囱化，ERP/WMS/TMS 数据断层，临时流程开发慢。</div><div class="mini"><b>RPA 场景</b>跨系统数据搬运、自动接口替代、自动报表汇总。</div></div></div></div>
+<div class="strategy"><h3>最佳销售策略</h3><div class="strategy-body">优先从财务对账、订单自动化、物流追踪切入，因为这些场景 ROI 最直观。</div></div>
+</main>
+<div class="card why-card why-full"><h3>RPA机会点</h3><ul class="why-list"><li>订单与对账高度标准化，自动化边界清晰。</li><li>财务、供应链 KPI 压力强，业务部门有主动性。</li><li>节省人力与缩短周期的价值直观，ROI 容易测算。</li></ul></div></div>
+</div></section>
+<section class="page"><div class="sheet">
+<div class="header"><div><h2>画像三：医院集团</h2><div class="sub">高协同、高审批、高报送，重点卖“减负”和“提效”。</div></div><div class="priority a">优先级 A</div></div>
+<div class="content">
+<aside class="left">
+<div class="card"><h3>典型企业</h3><div class="companies"><span class="pill">三甲医院</span><span class="pill">医联体</span><span class="pill">连锁专科医院</span><span class="pill">大型民营医院集团</span></div></div>
+<div class="card"><h3>企业特征</h3><div class="features"><div class="feature"><span>企业规模</span><span>中大型</span></div><div class="feature"><span>系统复杂度</span><span>高</span></div><div class="feature"><span>自动化预算</span><span>中</span></div><div class="feature"><span>IT 成熟度</span><span>中</span></div><div class="feature"><span>合规要求</span><span>高</span></div><div class="feature"><span>数据量</span><span>极大</span></div><div class="feature"><span>管理特征</span><span>审批与报送密集</span></div></div></div>
+</aside>
+<main class="right">
+<div class="dept-list"><div class="dept"><h3>医务/运营部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>医保数据报送、DRG/DIP 数据统计、医疗指标汇总。</div><div class="mini"><b>RPA 场景</b>数据自动汇总上传、统计报表生成、HIS 数据抓取。</div></div></div><div class="dept"><h3>药剂科</h3><div class="pair"><div class="mini"><b>典型痛点</b>药品库存更新滞后、采购流程人工化、药监追溯压力。</div><div class="mini"><b>RPA 场景</b>采购单自动生成、库存同步、药品流向追溯。</div></div></div><div class="dept"><h3>财务部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>HIS 对账、医保结算、发票核销、银行流水核对。</div><div class="mini"><b>RPA 场景</b>自动对账、票据整理、流水核对、结算报表输出。</div></div></div></div>
+<div class="strategy"><h3>最佳销售策略</h3><div class="strategy-body">不要先讲 AI，先讲减少人工录入、提升报送效率、降低医保差错、缩短对账时间。</div></div>
+</main>
+<div class="card why-card why-full"><h3>RPA机会点</h3><ul class="why-list"><li>行政人员负担重，重复报送任务多。</li><li>医保监管趋严，差错风险高。</li><li>医院对减少人工录入、缩短对账时间诉求强。</li></ul></div></div>
+</div></section>
+<section class="page"><div class="sheet">
+<div class="header"><div><h2>画像四：CRO/CDMO 企业</h2><div class="sub">文档密集、项目密集、人效敏感，是 RPA 高适配客群。</div></div><div class="priority a">优先级 A</div></div>
+<div class="content">
+<aside class="left">
+<div class="card"><h3>典型企业</h3><div class="companies"><span class="pill">药明康德</span><span class="pill">康龙化成</span><span class="pill">泰格医药</span><span class="pill">凯莱英</span><span class="pill">博腾股份</span></div></div>
+<div class="card"><h3>企业特征</h3><div class="features"><div class="feature"><span>企业规模</span><span>中大型</span></div><div class="feature"><span>系统复杂度</span><span>高</span></div><div class="feature"><span>自动化预算</span><span>中高</span></div><div class="feature"><span>IT 成熟度</span><span>高</span></div><div class="feature"><span>合规要求</span><span>高</span></div><div class="feature"><span>数据量</span><span>大</span></div><div class="feature"><span>业务特征</span><span>文档与项目密集</span></div></div></div>
+</aside>
+<main class="right">
+<div class="dept-list"><div class="dept"><h3>临床运营部</h3><div class="pair"><div class="mini"><b>典型痛点</b>试验数据整理、受试者信息录入、SAE 跟踪、项目进度同步。</div><div class="mini"><b>RPA 场景</b>EDC 数据同步、SAE 提醒汇总、项目周报自动生成。</div></div></div><div class="dept"><h3>数据管理部</h3><div class="pair"><div class="mini"><b>典型痛点</b>数据清洗重复、医学编码工作量大、多系统切换频繁。</div><div class="mini"><b>RPA 场景</b>数据清洗、编码清单生成、数据库结果汇总。</div></div></div><div class="dept"><h3>GMP 运营部门（CDMO）</h3><div class="pair"><div class="mini"><b>典型痛点</b>客户报告制作、生产记录整理、文件合规要求。</div><div class="mini"><b>RPA 场景</b>客户报告生成、批记录整理、GMP 文件归档。</div></div></div></div>
+<div class="strategy"><h3>最佳销售策略</h3><div class="strategy-body">优先切临床数据管理、项目运营自动化、GMP 文件自动化，突出“人效提升”。</div></div>
+</main>
+<div class="card why-card why-full"><h3>RPA机会点</h3><ul class="why-list"><li>服务型公司极度关注人效。</li><li>临床、项目、GMP 文档场景重复度高。</li><li>IT 接受度较高，管理层对效率敏感。</li></ul></div></div>
+</div></section>
+<section class="page"><div class="sheet">
+<div class="header"><div><h2>画像五：连锁药店与互联网医药平台</h2><div class="sub">偏运营自动化，多平台、多订单、多数据同步是核心机会。</div></div><div class="priority b">优先级 B</div></div>
+<div class="content">
+<aside class="left">
+<div class="card"><h3>典型企业</h3><div class="companies"><span class="pill">老百姓大药房</span><span class="pill">大参林</span><span class="pill">益丰药房</span><span class="pill">京东健康</span><span class="pill">阿里健康</span></div></div>
+<div class="card"><h3>企业特征</h3><div class="features"><div class="feature"><span>企业规模</span><span>中大型</span></div><div class="feature"><span>系统复杂度</span><span>中高</span></div><div class="feature"><span>自动化预算</span><span>中</span></div><div class="feature"><span>IT 成熟度</span><span>高</span></div><div class="feature"><span>合规要求</span><span>中高</span></div><div class="feature"><span>数据量</span><span>极大</span></div><div class="feature"><span>业务特征</span><span>用户运营驱动</span></div></div></div>
+</aside>
+<main class="right">
+<div class="dept-list"><div class="dept"><h3>电商运营部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>订单量大、平台数据同步复杂、活动报表制作耗时。</div><div class="mini"><b>RPA 场景</b>订单自动处理、平台数据抓取、日报周报自动生成。</div></div></div><div class="dept"><h3>合规与审核部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>医师资质审核、药品销售合规检查、处方审核流转。</div><div class="mini"><b>RPA 场景</b>资质文件审核、合规信息检查、异常订单提醒。</div></div></div><div class="dept"><h3>财务部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>多平台对账复杂、发票整理耗时、促销结算规则多。</div><div class="mini"><b>RPA 场景</b>平台对账、财务台账生成、发票核验与归档。</div></div></div></div>
+<div class="strategy"><h3>最佳销售策略</h3><div class="strategy-body">重点讲电商运营效率、多平台数据同步、自动对账、自动审核。</div></div>
+</main>
+<div class="card why-card why-full"><h3>RPA机会点</h3><ul class="why-list"><li>订单处理量大，数据规模大。</li><li>平台型业务天然适合自动化。</li><li>运营、财务、审核场景复用性强。</li></ul></div></div>
+</div></section>
+<section class="page"><div class="sheet">
+<div class="header"><div><h2>画像六：医疗器械企业</h2><div class="sub">注册合规、经销商体系、售后服务是三大切入点。</div></div><div class="priority b">优先级 B+</div></div>
+<div class="content">
+<aside class="left">
+<div class="card"><h3>典型企业</h3><div class="companies"><span class="pill">迈瑞医疗</span><span class="pill">联影医疗</span><span class="pill">微创医疗</span><span class="pill">鱼跃医疗</span></div></div>
+<div class="card"><h3>企业特征</h3><div class="features"><div class="feature"><span>企业规模</span><span>中大型</span></div><div class="feature"><span>系统复杂度</span><span>高</span></div><div class="feature"><span>自动化预算</span><span>中高</span></div><div class="feature"><span>IT 成熟度</span><span>中高</span></div><div class="feature"><span>合规要求</span><span>高</span></div><div class="feature"><span>数据量</span><span>大</span></div><div class="feature"><span>业务特征</span><span>注册 + 售后并重</span></div></div></div>
+</aside>
+<main class="right">
+<div class="dept-list"><div class="dept"><h3>注册事务部</h3><div class="pair"><div class="mini"><b>典型痛点</b>国内外法规更新频繁、注册资料复杂、文档版本管理困难。</div><div class="mini"><b>RPA 场景</b>法规跟踪、注册资料归档分类、文档版本同步。</div></div></div><div class="dept"><h3>供应链部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>经销商管理复杂、多区域库存同步、发票对账压力大。</div><div class="mini"><b>RPA 场景</b>库存同步、经销商对账、发票台账生成。</div></div></div><div class="dept"><h3>售后服务部门</h3><div class="pair"><div class="mini"><b>典型痛点</b>工单处理量大、巡检提醒依赖人工、客诉闭环慢。</div><div class="mini"><b>RPA 场景</b>工单派发、巡检提醒、客诉数据汇总。</div></div></div></div>
+<div class="strategy"><h3>最佳销售策略</h3><div class="strategy-body">重点切入注册自动化、售后运营自动化、经销商管理自动化。</div></div>
+</main>
+<div class="card why-card why-full"><h3>RPA机会点</h3><ul class="why-list"><li>器械行业注册合规要求高。</li><li>经销商体系复杂，对账与资料管理压力大。</li><li>售后效率直接影响客户满意度。</li></ul></div></div>
+</div></section>
+<section class="page summary"><div class="sheet"><div class="header"><div><h2>客户优先级与销售切入总结</h2><div class="sub">用于销售资源分配、线索筛选和首轮拜访话术设计。</div></div></div><div class="card"><h3>客户优先级总览</h3><table class="summary-table"><tr><th>优先级</th><th>客户类型</th><th>推荐指数</th><th>核心判断</th><th>优先切入部门/场景</th></tr><tr><td>S</td><td>大型制药企业</td><td>★★★★★</td><td>合规最重、场景最多、预算最充足，是医疗健康行业 RPA 的首选客户。</td><td>QA/QC 质量部门、注册事务部（RA）、药物警戒部（PV）、供应链与采购部门</td></tr><tr><td>S</td><td>医药流通企业</td><td>★★★★★</td><td>订单、库存、物流、对账密集，ROI 最容易量化。</td><td>供应链运营部、财务对账部、信息化部门</td></tr><tr><td>A</td><td>医院集团</td><td>★★★★☆</td><td>高协同、高审批、高报送，重点卖“减负”和“提效”。</td><td>医务/运营部门、药剂科、财务部门</td></tr><tr><td>A</td><td>CRO/CDMO 企业</td><td>★★★★☆</td><td>文档密集、项目密集、人效敏感，是 RPA 高适配客群。</td><td>临床运营部、数据管理部、GMP 运营部门（CDMO）</td></tr><tr><td>B+</td><td>医疗器械企业</td><td>★★★☆☆</td><td>注册合规、经销商体系、售后服务是三大切入点。</td><td>注册事务部、供应链部门、售后服务部门</td></tr><tr><td>B</td><td>连锁药店与互联网医药平台</td><td>★★★☆☆</td><td>偏运营自动化，多平台、多订单、多数据同步是核心机会。</td><td>电商运营部门、合规与审核部门、财务部门</td></tr></table></div><div class="value-grid"><div class="value"><h3>合规效率提升</h3><p>围绕 GMP、GSP、注册、药物警戒、医保报送等强监管场景，减少人工差错并强化留痕。</p></div><div class="value"><h3>人工替代</h3><p>替代 Excel、邮件、网页系统、ERP/WMS/CRM 之间的重复录入、下载、核对和报表工作。</p></div><div class="value"><h3>风险降低</h3><p>降低数据错漏、资质过期、审计资料缺失、对账差异遗漏、监管报送延迟等运营风险。</p></div></div><div class="final-quote">医疗行业卖 RPA，本质不是卖技术，而是卖“合规效率提升 + 人工替代 + 风险降低”。</div></div></section>
+</section>
+<section class="module" id="m3">
+<div class="module-head"><div><h2>RPA 场景地图：找到能聊、值得聊、容易出 ROI 的场景</h2><p>保留“场景 + 销售话术”的卡片表达，同时增加卡片间距和话术区层级，避免内容拥挤。</p></div></div><section class="section" id="overview"><div class="sheet">
+<div class="section-title"><div><h2>一眼判断：医疗健康行业 RPA 机会在哪里</h2><p>销售不用先判断技术边界，先识别这些“高概率商机信号”。</p></div><div class="badge">销售识别雷达</div></div>
+<div class="radar">
+<div class="card radar-card"><span class="num">高频重复</span><span class="radar-desc">每天/每周大量人工下载、录入、核对、汇总。</span></div>
+<div class="card radar-card"><span class="num">多系统割裂</span><span class="radar-desc">Excel、邮件、ERP、OA、监管网站之间来回切换。</span></div>
+<div class="card radar-card"><span class="num">强监管留痕</span><span class="radar-desc">涉及 GMP、GSP、注册、PV、医保、审计等合规记录。</span></div>
+<div class="card radar-card"><span class="num">人工差错代价高</span><span class="radar-desc">错漏可能导致审计问题、延迟交付、财务差异或监管风险。</span></div>
+<div class="card radar-card"><span class="num">ROI 易量化</span><span class="radar-desc">能算出节省工时、缩短周期、降低差错、减少加班。</span></div>
+</div>
+<div class="grid-3" style="margin-top:18px">
+<div class="card"><h3>优先找谁</h3><p>大型药企、医药流通企业、CRO/CDMO、医院集团、医疗器械企业。</p></div>
+<div class="card"><h3>优先找什么部门</h3><p>QA/QC、RA、PV、供应链、财务、运营、信息化。</p></div>
+<div class="card"><h3>优先聊什么价值</h3><p>减少人工、降低差错、提升合规留痕、缩短处理周期。</p></div>
+</div>
+</div></section>
+<nav aria-label="RPA场景地图场景域切换" class="scene-domain-nav"><button class="active" data-scene-domain="hc_sd1" type="button">质量合规</button><button data-scene-domain="hc_sd2" type="button">注册事务</button><button data-scene-domain="hc_sd3" type="button">药物警戒</button><button data-scene-domain="hc_sd4" type="button">供应链流通</button><button data-scene-domain="hc_sd5" type="button">财务对账</button><button data-scene-domain="hc_sd6" type="button">医院终端</button><button data-scene-domain="hc_sd7" type="button">销售运营</button><button data-scene-domain="hc_sd8" type="button">销售打法</button></nav><section class="section scene-domain-panel active" id="hc_sd1"><div class="sheet domain">
+<div class="domain-head"><div><h2>质量合规：QA/QC 是药企最优先的切入口</h2><p>关键词：GMP、批记录、审计、偏差、CAPA、供应商资质。</p></div><div class="priority p-s">优先级 S</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">制药企业</span><span class="chip">CDMO</span><span class="chip">医疗器械企业</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>QA 团队经常加班整理资料。</li><li>审计前需要人工汇总大量文档。</li><li>供应商资质、证照有效期靠人工台账维护。</li><li>偏差/CAPA 流程催办靠人工盯。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">QA/QC</span><h3>审计资料自动汇总</h3><p>把分散在 OA、文档系统、邮件、共享盘中的审计材料按规则归集、命名、打包。</p><div class="meta"><span>高频</span><span>强合规</span><span>易出 ROI</span></div><div class="talk"><small>销售话术</small>“很多 QA 团队审计前都在靠人工找文件、改命名、做清单，我们可以先从审计资料准备这个点做自动化。”</div></div>
+<div class="scene"><span class="role">QA/QC</span><h3>供应商资质有效期巡检</h3><p>定期检查供应商证照、资质文件、有效期和缺失项，自动生成风险清单并提醒责任人。</p><div class="meta"><span>资质合规</span><span>低侵入</span><span>标准化</span></div><div class="talk"><small>销售话术</small>“供应商资质过期属于很典型的合规风险，RPA 可以每天自动巡检并提前预警。”</div></div>
+<div class="scene"><span class="role">QA/QC</span><h3>偏差/CAPA 流程催办</h3><p>从质量系统或 OA 中提取待办、逾期、责任人信息，自动发送提醒与升级通知。</p><div class="meta"><span>流程催办</span><span>管理可见</span><span>减人工</span></div><div class="talk"><small>销售话术</small>“不是替代质量体系，而是帮 QA 把催办、追踪、汇总这些重复工作自动化。”</div></div>
+<div class="scene"><span class="role">QC</span><h3>检验台账与报告信息核对</h3><p>对检验结果、批号、物料号、日期、结论等字段做跨表核对和异常提示。</p><div class="meta"><span>核对</span><span>降差错</span><span>报表</span></div><div class="talk"><small>销售话术</small>“只要现在还在用 Excel 做结果汇总和交叉核对，就适合先做一个小场景验证。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd2"><div class="sheet domain">
+<div class="domain-head"><div><h2>注册事务：信息跟踪与资料整理适合作为轻量切入</h2><p>关键词：NMPA、CDE、注册进度、法规更新、申报资料。</p></div><div class="priority p-a">优先级 A</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">创新药企</span><span class="chip">仿制药企</span><span class="chip">器械企业</span><span class="chip">CRO</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>注册团队每天查多个监管网站。</li><li>项目进度、补充资料、法规更新靠人工跟踪。</li><li>注册台账维护依赖 Excel。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">RA</span><h3>审评进度自动跟踪</h3><p>定期查询公开平台上的审评状态、受理号、通知信息，更新注册台账并提醒相关人员。</p><div class="meta"><span>网页操作</span><span>定时巡检</span><span>台账更新</span></div><div class="talk"><small>销售话术</small>“注册团队最烦的是每天重复查进度，我们可以先把进度跟踪和提醒自动化。”</div></div>
+<div class="scene"><span class="role">RA</span><h3>法规与公告更新监控</h3><p>监控监管网站公告、政策、指导原则更新，按关键词分类推送给相关项目负责人。</p><div class="meta"><span>信息监控</span><span>规则推送</span><span>低风险</span></div><div class="talk"><small>销售话术</small>“RPA 不判断法规结论，而是帮团队自动发现更新、分类和提醒。”</div></div>
+<div class="scene"><span class="role">RA</span><h3>申报资料清单核对</h3><p>根据模板检查资料是否齐全、命名是否规范、版本是否缺失，输出缺口清单。</p><div class="meta"><span>文档清单</span><span>缺失检查</span><span>提效</span></div><div class="talk"><small>销售话术</small>“申报前的资料齐套检查，很多企业还是人工逐项对照，适合做自动核对。”</div></div>
+<div class="scene"><span class="role">RA</span><h3>注册台账自动维护</h3><p>把邮件、网站、内部系统里的关键节点信息同步到注册台账，减少重复录入。</p><div class="meta"><span>跨系统</span><span>录入</span><span>汇总</span></div><div class="talk"><small>销售话术</small>“只要台账靠人维护，就可以先从自动更新字段和生成提醒开始。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd3"><div class="sheet domain">
+<div class="domain-head"><div><h2>药物警戒：ADR/SAE 信息处理是强监管高价值场景</h2><p>关键词：ADR、SAE、ICSR、文献检索、安全报告。</p></div><div class="priority p-s">优先级 S</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">上市药企</span><span class="chip">CRO</span><span class="chip">创新药企</span><span class="chip">互联网医药</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>PV 邮箱、热线、表单来源分散。</li><li>病例初筛、录入、分派耗时。</li><li>文献检索与周期性汇总压力大。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">PV</span><h3>ADR 邮件与表单信息收集</h3><p>自动读取指定邮箱/表单，提取患者、药品、事件、时间等字段，生成待处理清单。</p><div class="meta"><span>强监管</span><span>信息提取</span><span>高价值</span></div><div class="talk"><small>销售话术</small>“PV 团队不是缺系统，而是前端信息来源分散，RPA 能先把收集和分派做起来。”</div></div>
+<div class="scene"><span class="role">PV</span><h3>病例初筛与分派提醒</h3><p>按规则识别疑似严重事件、缺失字段、超时风险，并提醒责任人处理。</p><div class="meta"><span>时限管理</span><span>风险提醒</span><span>留痕</span></div><div class="talk"><small>销售话术</small>“对于有时限要求的安全事件，自动提醒比人工盯表更稳。”</div></div>
+<div class="scene"><span class="role">PV</span><h3>文献检索结果整理</h3><p>按关键词检索指定来源，整理标题、摘要、药品名、事件关键词，形成复核清单。</p><div class="meta"><span>信息整理</span><span>人工复核</span><span>提效</span></div><div class="talk"><small>销售话术</small>“RPA 负责抓取和整理，医学判断仍由 PV 专员完成。”</div></div>
+<div class="scene"><span class="role">PV</span><h3>周期性安全数据汇总</h3><p>从多个系统导出数据，按模板生成安全性统计表和递交前检查清单。</p><div class="meta"><span>报表汇总</span><span>跨系统</span><span>可量化</span></div><div class="talk"><small>销售话术</small>“周期性报告前的数据汇总和格式化，是非常适合自动化的重复工作。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd4"><div class="sheet domain">
+<div class="domain-head"><div><h2>供应链与医药流通：订单、物流、库存台账、冷链追踪</h2><p>关键词：ERP、WMS、TMS、GSP、冷链、订单、配送。</p></div><div class="priority p-s">优先级 S</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">医药流通企业</span><span class="chip">药企供应链</span><span class="chip">连锁药店</span><span class="chip">器械经销体系</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>订单来自邮件、Excel、平台，仍需人工录入。</li><li>物流状态、冷链温度需要跨平台查询。</li><li>库存台账与业务系统之间存在人工搬运。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">供应链</span><h3>订单接收与 ERP 录入</h3><p>读取邮件/Excel/平台订单，校验客户、商品、数量、价格后录入 ERP 或生成待确认单。</p><div class="meta"><span>高频</span><span>标准化</span><span>ROI 清晰</span></div><div class="talk"><small>销售话术</small>“如果订单还要人工从 Excel 搬到 ERP，这就是最典型的 RPA 切入口。”</div></div>
+<div class="scene"><span class="role">物流</span><h3>配送状态与异常追踪</h3><p>定时查询物流平台、承运商系统，汇总签收、延迟、异常状态并自动提醒。</p><div class="meta"><span>跨平台</span><span>异常提醒</span><span>运营提效</span></div><div class="talk"><small>销售话术</small>“RPA 不替代物流系统，而是把多平台查询和异常汇总自动化。”</div></div>
+<div class="scene"><span class="role">冷链</span><h3>冷链温控数据巡检</h3><p>获取温控记录，识别缺失、超温、断点数据，生成异常清单并推送处理。</p><div class="meta"><span>GSP</span><span>异常巡检</span><span>合规留痕</span></div><div class="talk"><small>销售话术</small>“冷链数据不是没人看，而是人工看不过来，自动巡检可以先解决异常发现。”</div></div>
+<div class="scene"><span class="role">运营</span><h3>采购/销售台账自动汇总</h3><p>从 ERP、WMS、平台导出数据，生成按客户、品类、区域的运营报表。</p><div class="meta"><span>报表</span><span>数据汇总</span><span>低门槛</span></div><div class="talk"><small>销售话术</small>“很多管理报表不是系统没有数据，而是每天要人工导出、合并、调整格式。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd5"><div class="sheet domain">
+<div class="domain-head"><div><h2>财务对账：最容易量化 ROI 的通用切入场景</h2><p>关键词：应收应付、发票、银行流水、经销商、医院回款。</p></div><div class="priority p-s">优先级 S</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">医药流通</span><span class="chip">连锁药店</span><span class="chip">药企</span><span class="chip">医院集团</span><span class="chip">器械企业</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>对账靠 Excel，月底集中加班。</li><li>发票、订单、回款、出库单需要多表核对。</li><li>差异项需要人工标记和邮件沟通。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">财务</span><h3>医院/经销商对账</h3><p>自动下载/读取对账单，与 ERP、出库单、发票、回款信息匹配，输出差异清单。</p><div class="meta"><span>ROI 最强</span><span>高频</span><span>可复制</span></div><div class="talk"><small>销售话术</small>“财务对账是最容易算账的场景，先用一个客户或一个区域做样板。”</div></div>
+<div class="scene"><span class="role">财务</span><h3>发票核验与归档</h3><p>自动获取发票信息，核对抬头、金额、税号、订单号，并按规则归档。</p><div class="meta"><span>核验</span><span>归档</span><span>减人工</span></div><div class="talk"><small>销售话术</small>“发票处理每天都做，规则清晰，适合快速做出效果。”</div></div>
+<div class="scene"><span class="role">财务</span><h3>银行流水匹配</h3><p>将银行流水与应收、客户、发票、订单记录进行规则匹配，标记未匹配项。</p><div class="meta"><span>对账</span><span>差异识别</span><span>月结</span></div><div class="talk"><small>销售话术</small>“RPA 先把能自动匹配的处理掉，把复杂差异留给财务人员。”</div></div>
+<div class="scene"><span class="role">财务</span><h3>月结报表自动生成</h3><p>按固定模板汇总销售、回款、库存、发票、费用数据，自动生成月结材料。</p><div class="meta"><span>报表</span><span>模板化</span><span>节省加班</span></div><div class="talk"><small>销售话术</small>“月底固定模板、固定来源、固定动作，正是 RPA 最适合替代的部分。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd6"><div class="sheet domain">
+<div class="domain-head"><div><h2>医院与终端：重点卖“行政减负、报送提效、对账提效”</h2><p>关键词：HIS、医保、DRG/DIP、药剂科、运营报表。</p></div><div class="priority p-a">优先级 A</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">三甲医院</span><span class="chip">医院集团</span><span class="chip">医联体</span><span class="chip">专科连锁</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>行政报表、医保报送占用大量人力。</li><li>HIS、医保、财务系统之间需要重复核对。</li><li>科室运营指标需要人工汇总。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">运营/医务</span><h3>医保/运营数据报送</h3><p>按固定口径从系统导出数据，清洗、汇总、填报到指定模板或平台。</p><div class="meta"><span>行政减负</span><span>报送</span><span>稳定重复</span></div><div class="talk"><small>销售话术</small>“医院场景先不要讲复杂智能化，先讲把每天/每周重复报送自动化。”</div></div>
+<div class="scene"><span class="role">财务</span><h3>医保结算与差异核对</h3><p>核对 HIS、医保结算、发票、银行回款数据，标记差异项。</p><div class="meta"><span>对账</span><span>差异</span><span>ROI 清晰</span></div><div class="talk"><small>销售话术</small>“医保结算差异处理很耗人，RPA 可以先做自动匹配和差异清单。”</div></div>
+<div class="scene"><span class="role">药剂科</span><h3>药品采购与使用台账</h3><p>汇总采购、库存、领用、退库、追溯信息，生成科室管理台账。</p><div class="meta"><span>台账</span><span>药品管理</span><span>报表</span></div><div class="talk"><small>销售话术</small>“药剂科很多工作是台账和报表，适合从固定模板开始做。”</div></div>
+<div class="scene"><span class="role">运营</span><h3>科室指标自动汇总</h3><p>按固定指标口径汇总门诊量、住院量、手术量、收入、耗材等运营数据。</p><div class="meta"><span>管理报表</span><span>多系统</span><span>减人工</span></div><div class="talk"><small>销售话术</small>“院内经营分析数据往往都有，但汇总过程人工多，可以先自动化报表。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd7"><div class="sheet domain">
+<div class="domain-head"><div><h2>销售运营与市场准入：适合从数据汇总和资质检查切入</h2><p>关键词：准入、招采、经销商、价格、终端、销售合规。</p></div><div class="priority p-a">优先级 A</div></div>
+<div class="domain-body">
+<aside class="sidebox"><div class="card"><h3>适用客户</h3><div class="chips"><span class="chip">药企商业化团队</span><span class="chip">器械企业</span><span class="chip">医药流通</span><span class="chip">连锁药店</span></div></div><div class="card signal"><h3>销售识别信号</h3><ul><li>招采平台、价格信息、终端数据靠人工收集。</li><li>经销商资质、协议、授权材料需要定期检查。</li><li>销售数据分散在 CRM、ERP、Excel。</li></ul></div></aside>
+<main class="scenes">
+<div class="scene"><span class="role">市场准入</span><h3>招采/挂网信息监控</h3><p>定期监控各地招采、挂网、价格、目录信息，按产品和区域生成更新提醒。</p><div class="meta"><span>信息监控</span><span>销售线索</span><span>低侵入</span></div><div class="talk"><small>销售话术</small>“准入团队要盯很多平台，RPA 可以先帮他们做自动监控和提醒。”</div></div>
+<div class="scene"><span class="role">商务</span><h3>经销商资质与协议巡检</h3><p>检查经销商证照、授权书、协议有效期、缺失材料，生成风险清单。</p><div class="meta"><span>渠道合规</span><span>资质</span><span>预警</span></div><div class="talk"><small>销售话术</small>“经销商体系越大，资质和授权材料越适合做自动巡检。”</div></div>
+<div class="scene"><span class="role">销售运营</span><h3>销售数据日报/周报</h3><p>从 CRM、ERP、BI、Excel 提取销售、回款、库存、终端数据，生成固定报表。</p><div class="meta"><span>报表</span><span>跨系统</span><span>管理提效</span></div><div class="talk"><small>销售话术</small>“销售管理报表如果每天都有人导数、合表、发邮件，就是很好的切入口。”</div></div>
+<div class="scene"><span class="role">合规</span><h3>价格与促销执行核查</h3><p>对渠道价格、促销政策执行情况、异常折扣进行数据比对和提醒。</p><div class="meta"><span>价格监控</span><span>异常识别</span><span>风控</span></div><div class="talk"><small>销售话术</small>“RPA 可以先帮业务发现异常，不替代最终业务判断。”</div></div>
+</main>
+</div>
+</div></section><section class="section scene-domain-panel" id="hc_sd8"><div class="sheet">
+<div class="section-title playbook-title"><div><h2>销售打法：重点是“会识别、会开口、会推进”</h2></div><div class="badge">Sales Playbook</div></div>
+<div class="playbook">
+<div class="card do"><h3>建议这样聊</h3><ul class="why-list"><li>“哪些工作每天都要重复导出、录入、核对？”</li><li>“哪些报表月底最容易加班？”</li><li>“哪些流程涉及合规留痕，人工出错成本比较高？”</li><li>“哪些系统之间现在还靠 Excel 或人工搬数据？”</li></ul></div>
+<div class="card dont"><h3>不要一上来这样聊</h3><ul class="why-list"><li>不要先讲平台能力和技术架构。</li><li>不要先否定客户现有系统。</li><li>不要把所有场景都说成 AI。</li><li>不要承诺替代业务判断和合规判断。</li></ul></div>
+</div>
+<div class="qa" style="margin-top:16px">
+<div class="qa-item"><b>首轮拜访目标：</b>找到 1 个高频重复、跨系统、能算 ROI 的场景，而不是一次性讲完整方案。</div>
+<div class="qa-item"><b>最佳切入顺序：</b>财务对账 → 质量合规 → PV/注册 → 供应链流通 → 医院报送 → 销售运营。</div>
+<div class="qa-item"><b>最容易成交的价值表达：</b>节省工时、减少人工差错、缩短处理周期、增强合规留痕。</div>
+<div class="qa-item"><b>销售要带回的信息：</b>系统名称、数据来源、人工步骤、频次、参与人数、当前耗时、差错影响。</div>
+</div>
+<div class="card" style="margin-top:16px;background:linear-gradient(90deg,#eff6ff,#fff);border-left:6px solid var(--blue)"><h3>一句话总结</h3><p style="font-size:20px;font-weight:900;color:#1e3a8a">医疗健康行业卖 RPA，不是卖“机器人”，而是卖“把高频、重复、强合规的人工流程稳定自动化”。</p></div>
+</div></section><footer class="footer">医疗健康行业 RPA 销售作战地图 · 面向销售全员使用</footer><section class="module" id="m4">
+<div class="module-head"><div><h2>客户在哪里：按区域找头部客户与切入口</h2><p>按产业集群定位头部客户，结合优先触达部门和高频流程切入口规划销售路线。</p></div></div>
+<div class="section-title">
+<div><h2>一、全国重点产业集群总览</h2><p>按医药制造、创新药、医疗器械、IVD、CXO、医药商业等产业密度归类。</p></div>
+</div>
+<section class="map-grid"><div class="map-card">
+<div class="dot"></div>
+<h3>京津冀</h3>
+<p>以北京研发与央企医药平台、天津生物药与CDMO、河北化学药和中药工业为核心。</p>
+<div class="mini-hubs">北京中关村生命科学园 · 天津滨海新区</div>
+</div><div class="map-card">
+<div class="dot"></div>
+<h3>上海张江</h3>
+<p>以上海张江为创新药和高端器械核心，叠加医药商业集团总部和国际化药企平台。</p>
+<div class="mini-hubs">张江药谷 · 上海国际医学园区</div>
+</div><div class="map-card">
+<div class="dot"></div>
+<h3>苏锡常杭宁</h3>
+<p>以苏州创新药和器械、无锡CDMO、杭州医药商业与CRO、南京药物研发为主。</p>
+<div class="mini-hubs">苏州工业园区 BioBAY · 无锡高新区</div>
+</div><div class="map-card">
+<div class="dot"></div>
+<h3>粤港澳</h3>
+<p>以深圳高端器械和基因科技、广州IVD与医药商业、珠海与中山创新药/器械为核心。</p>
+<div class="mini-hubs">深圳坪山国家生物产业基地 · 广州科学城</div>
+</div><div class="map-card">
+<div class="dot"></div>
+<h3>成渝</h3>
+<p>以成都创新药与检验诊断、重庆生物医药和大健康产业为核心。</p>
+<div class="mini-hubs">成都天府国际生物城 · 重庆两江新区水土新城</div>
+</div><div class="map-card">
+<div class="dot"></div>
+<h3>华中</h3>
+<p>以武汉医药商业与创新医疗服务、郑州IVD、新乡疫苗、长沙药房与器械装备为核心。</p>
+<div class="mini-hubs">武汉光谷生物城 · 郑州航空港</div>
+</div><div class="map-card">
+<div class="dot"></div>
+<h3>山东东北</h3>
+<p>以山东制药工业和器械制造、东北老牌化学药和生物制品企业为核心。</p>
+<div class="mini-hubs">济南 · 长春高新区生物医药产业带</div>
+</div></section>
+<div class="section-title">
+<div><h2>二、区域集群与头部客户清单</h2><p>点击页签切换区域</p></div>
+</div>
+<section class="jh-region-workspace"><nav aria-label="区域切换" class="jh-region-tabs"><button class="jh-region-tab active" data-region="jh-tab0" type="button">京津冀</button><button class="jh-region-tab" data-region="jh-tab1" type="button">上海张江</button><button class="jh-region-tab" data-region="jh-tab2" type="button">苏锡常杭宁</button><button class="jh-region-tab" data-region="jh-tab3" type="button">粤港澳</button><button class="jh-region-tab" data-region="jh-tab4" type="button">成渝</button><button class="jh-region-tab" data-region="jh-tab5" type="button">华中</button><button class="jh-region-tab" data-region="jh-tab6" type="button">山东东北</button></nav><section class="jh-region-panel active" id="jh-tab0"><div class="jh-region-head"><h3>京津冀：创新药、疫苗、中药与医药商业集群</h3><div class="jh-region-count"><strong>14</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>北京中关村生命科学园 / 大兴生物医药基地 / 北京经开区</span><span>天津滨海新区 / 武清开发区</span><span>石家庄高新区 / 以岭健康城</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">中国生物技术股份有限公司</td><td>疫苗 / 血制品 / 生物制品</td><td>央企医药平台</td><td>质量、药物警戒、供应链</td><td>批签发资料、冷链追溯、PV病例整理</td>
+</tr><tr>
+<td class="name">华润医药</td><td>医药商业 / 制药 / 零售</td><td>央企医药集团</td><td>财务共享、供应链、商业运营</td><td>应收应付对账、订单录入、渠道数据汇总</td>
+</tr><tr>
+<td class="name">北京同仁堂</td><td>中药 / 医药零售</td><td>老字号上市国企</td><td>质量、生产、渠道运营</td><td>GMP文件、门店数据、批号追溯</td>
+</tr><tr>
+<td class="name">悦康药业</td><td>化学药 / 高端制剂</td><td>上市药企</td><td>注册、质量、生产</td><td>注册资料整理、批记录核查、生产报表</td>
+</tr><tr>
+<td class="name">诺禾致源</td><td>基因测序 / 生命科学服务</td><td>上市企业</td><td>实验室运营、交付管理、财务</td><td>样本流转、检测报告交付、订单对账</td>
+</tr><tr>
+<td class="name">百奥赛图</td><td>模式动物 / 新药研发服务</td><td>上市Biotech / CRO</td><td>研发项目、商务、财务</td><td>项目进度同步、合同台账、客户报告</td>
+</tr><tr>
+<td class="name">热景生物</td><td>体外诊断 / 检测试剂</td><td>上市企业</td><td>注册、质量、供应链</td><td>注册资料归档、质检记录、经销商对账</td>
+</tr><tr>
+<td class="name">天士力</td><td>现代中药 / 创新药</td><td>上市药企</td><td>质量、生产、渠道</td><td>生产批记录、药品追溯、渠道库存</td>
+</tr><tr>
+<td class="name">红日药业</td><td>中药配方颗粒 / 化学药</td><td>上市药企</td><td>质量、供应链、财务</td><td>配方颗粒订单、物料台账、应收对账</td>
+</tr><tr>
+<td class="name">康希诺生物</td><td>疫苗 / 生物技术</td><td>上市Biotech</td><td>注册、质量、药物警戒</td><td>临床资料归档、ADR跟踪、合规报送</td>
+</tr><tr>
+<td class="name">石药集团</td><td>化学药 / 创新药</td><td>大型综合药企</td><td>QA、RA、PV、供应链</td><td>注册进度跟踪、批记录核查、药物警戒</td>
+</tr><tr>
+<td class="name">以岭药业</td><td>中成药 / 化学药</td><td>大型上市药企</td><td>质量、生产、销售运营</td><td>GMP文件、生产报表、渠道费用核对</td>
+</tr><tr>
+<td class="name">华北制药</td><td>抗生素 / 化学药</td><td>大型药企</td><td>生产、质量、采购</td><td>物料采购、生产台账、质量检验记录</td>
+</tr><tr>
+<td class="name">凯莱英</td><td>小分子CDMO</td><td>上市CXO企业</td><td>项目管理、质量、生产</td><td>客户项目周报、GMP文档、批生产记录</td>
+</tr></tbody>
+</table></div></section><section class="jh-region-panel" id="jh-tab1"><div class="jh-region-head"><h3>上海张江：创新药、高端器械与医药商业总部集群</h3><div class="jh-region-count"><strong>15</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>张江药谷 / 外高桥生命健康产业园</span><span>上海国际医学园区</span><span>漕河泾 / 临港生命科技产业片区</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">上海医药</td><td>医药商业 / 制药</td><td>大型国资医药集团</td><td>财务共享、供应链、商业运营</td><td>医院对账、配送单据、渠道库存</td>
+</tr><tr>
+<td class="name">复星医药</td><td>制药 / 医疗器械 / 诊断</td><td>全球化医药集团</td><td>质量、注册、财务、供应链</td><td>注册资料、GMP文档、跨系统报表</td>
+</tr><tr>
+<td class="name">联影医疗</td><td>高端医学影像设备</td><td>上市医疗器械龙头</td><td>注册、质量、售后服务</td><td>器械注册、服务工单、客户装机档案</td>
+</tr><tr>
+<td class="name">微创医疗</td><td>高值耗材 / 介入器械</td><td>大型医疗器械集团</td><td>注册、质量、经销商管理</td><td>注册资料、UDI追溯、经销商对账</td>
+</tr><tr>
+<td class="name">君实生物</td><td>创新生物药 / PD-1</td><td>上市Biotech</td><td>RA、PV、临床运营</td><td>药物警戒、临床数据、审评进度跟踪</td>
+</tr><tr>
+<td class="name">复宏汉霖</td><td>生物类似药 / 创新抗体</td><td>上市Biopharma</td><td>质量、注册、PV</td><td>GMP文件、注册资料、ADR整理</td>
+</tr><tr>
+<td class="name">再鼎医药</td><td>创新药商业化 / License-in</td><td>上市Biopharma</td><td>医学、PV、商业运营</td><td>医学资料、PV病例、销售数据汇总</td>
+</tr><tr>
+<td class="name">艾力斯医药</td><td>肿瘤创新药</td><td>上市Biotech</td><td>注册、医学、商业运营</td><td>审评跟踪、医学资料、渠道报表</td>
+</tr><tr>
+<td class="name">美迪西</td><td>临床前CRO</td><td>上市CRO</td><td>项目管理、实验室运营、财务</td><td>项目交付台账、实验报告、客户对账</td>
+</tr><tr>
+<td class="name">药明康德</td><td>CRO / CDMO一体化服务</td><td>全球化CXO龙头</td><td>项目管理、质量、财务共享</td><td>客户报告、GxP文档、订单结算</td>
+</tr><tr>
+<td class="name">康德莱</td><td>医用穿刺器械 / 耗材</td><td>上市器械企业</td><td>质量、注册、供应链</td><td>质检记录、注册资料、经销商订单</td>
+</tr><tr>
+<td class="name">心脉医疗</td><td>主动脉及外周血管介入器械</td><td>上市器械企业</td><td>注册、质量、售后</td><td>UDI追溯、注册资料、售后工单</td>
+</tr><tr>
+<td class="name">上海谊众</td><td>创新药 / 抗肿瘤药</td><td>上市药企</td><td>注册、质量、商业运营</td><td>注册台账、生产质量记录、销售数据</td>
+</tr><tr>
+<td class="name">迪哲医药</td><td>肿瘤创新药</td><td>上市Biotech</td><td>临床运营、注册、PV</td><td>临床试验资料、审评进度、PV报告</td>
+</tr><tr>
+<td class="name">奕瑞科技</td><td>数字化X线探测器</td><td>上市医疗器械企业</td><td>质量、供应链、售后</td><td>质检台账、物料追溯、服务工单</td>
+</tr></tbody>
+</table></div></section><section class="jh-region-panel" id="jh-tab2"><div class="jh-region-head"><h3>苏锡常杭宁：创新药、CXO、诊断与器械制造集群</h3><div class="jh-region-count"><strong>17</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>苏州工业园区 BioBAY / 苏州高新区医疗器械产业园</span><span>无锡高新区 / 江阴生命健康产业带</span><span>杭州医药港 / 余杭生物医药高地</span><span>南京江北新区生物医药谷</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">恒瑞医药</td><td>创新药 / 化学药 / 生物药</td><td>中国创新药龙头</td><td>QA、RA、PV、供应链</td><td>药物警戒、注册资料、批记录核查</td>
+</tr><tr>
+<td class="name">信达生物</td><td>创新生物药 / 抗体药</td><td>上市Biopharma</td><td>PV、注册、商业运营</td><td>ADR整理、审评进度、商业数据汇总</td>
+</tr><tr>
+<td class="name">基石药业</td><td>肿瘤创新药</td><td>上市Biotech</td><td>医学、注册、PV</td><td>医学资料、临床资料、药物警戒</td>
+</tr><tr>
+<td class="name">亚盛医药</td><td>肿瘤与血液病创新药</td><td>上市Biotech</td><td>临床运营、注册、PV</td><td>临床项目周报、注册台账、PV病例</td>
+</tr><tr>
+<td class="name">百济神州</td><td>全球化创新药</td><td>大型上市Biopharma</td><td>临床运营、PV、商业运营</td><td>临床试验资料、全球PV、销售数据</td>
+</tr><tr>
+<td class="name">鱼跃医疗</td><td>家用医疗器械 / 呼吸设备</td><td>上市器械龙头</td><td>供应链、质量、售后</td><td>订单处理、质检记录、售后工单</td>
+</tr><tr>
+<td class="name">药明生物</td><td>生物药CDMO</td><td>大型CXO企业</td><td>项目管理、质量、生产</td><td>客户报告、GMP文档、批生产记录</td>
+</tr><tr>
+<td class="name">先声药业</td><td>创新药 / 神经与肿瘤药</td><td>上市药企</td><td>注册、医学、商业运营</td><td>审评跟踪、医学资料、渠道报表</td>
+</tr><tr>
+<td class="name">药石科技</td><td>药物分子砌块 / CDMO</td><td>上市CXO企业</td><td>项目管理、供应链、财务</td><td>项目台账、订单交付、客户对账</td>
+</tr><tr>
+<td class="name">健友股份</td><td>肝素制剂 / 注射剂</td><td>上市药企</td><td>质量、注册、生产</td><td>批记录、注册资料、出口合规文件</td>
+</tr><tr>
+<td class="name">华东医药</td><td>医药商业 / 制药 / 医美</td><td>大型上市医药集团</td><td>财务、供应链、商业运营</td><td>商业对账、库存同步、渠道报表</td>
+</tr><tr>
+<td class="name">贝达药业</td><td>肿瘤创新药</td><td>上市药企</td><td>注册、PV、商业运营</td><td>审评进度、ADR整理、销售报表</td>
+</tr><tr>
+<td class="name">泰格医药</td><td>临床CRO</td><td>上市CRO龙头</td><td>临床运营、数据管理、财务</td><td>EDC数据同步、项目周报、客户结算</td>
+</tr><tr>
+<td class="name">迪安诊断</td><td>第三方医学检验</td><td>上市企业</td><td>实验室运营、财务、交付管理</td><td>样本流转、报告交付、客户对账</td>
+</tr><tr>
+<td class="name">安旭生物</td><td>POCT / 体外诊断</td><td>上市IVD企业</td><td>注册、质量、供应链</td><td>注册资料、质检记录、出口单证</td>
+</tr><tr>
+<td class="name">康缘药业</td><td>中药创新药</td><td>上市药企</td><td>质量、生产、销售运营</td><td>GMP文件、批记录、渠道数据</td>
+</tr><tr>
+<td class="name">济川药业</td><td>儿科 / 消化中成药</td><td>上市药企</td><td>质量、渠道、财务</td><td>生产记录、经销商对账、费用核对</td>
+</tr></tbody>
+</table></div></section><section class="jh-region-panel" id="jh-tab3"><div class="jh-region-head"><h3>粤港澳：高端器械、基因检测、创新药与医药零售集群</h3><div class="jh-region-count"><strong>19</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>深圳坪山国家生物产业基地 / 光明科学城</span><span>广州科学城 / 广州国际生物岛</span><span>珠海国际健康港</span><span>中山国家健康科技产业基地</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">迈瑞医疗</td><td>高端医疗设备 / IVD</td><td>中国医疗器械龙头</td><td>质量、注册、供应链、售后</td><td>注册资料、售后工单、供应链报表</td>
+</tr><tr>
+<td class="name">华大基因</td><td>基因检测 / 生命科学服务</td><td>上市基因科技企业</td><td>实验室运营、交付、财务</td><td>样本流转、报告交付、客户对账</td>
+</tr><tr>
+<td class="name">新产业生物</td><td>化学发光 / IVD</td><td>上市IVD企业</td><td>注册、质量、供应链</td><td>注册资料、质检记录、仪器装机台账</td>
+</tr><tr>
+<td class="name">开立医疗</td><td>医学影像 / 内镜设备</td><td>上市医疗器械企业</td><td>注册、质量、售后</td><td>器械注册、客户工单、经销商数据</td>
+</tr><tr>
+<td class="name">普门科技</td><td>治疗与康复设备 / IVD</td><td>上市器械企业</td><td>注册、质量、售后</td><td>注册资料、质检记录、维修工单</td>
+</tr><tr>
+<td class="name">康泰生物</td><td>疫苗</td><td>上市生物制品企业</td><td>质量、注册、PV</td><td>批签发资料、冷链追溯、ADR整理</td>
+</tr><tr>
+<td class="name">信立泰</td><td>心血管药物 / 创新药</td><td>上市药企</td><td>注册、质量、商业运营</td><td>注册台账、GMP文件、渠道报表</td>
+</tr><tr>
+<td class="name">微芯生物</td><td>创新药</td><td>上市Biotech</td><td>临床运营、注册、PV</td><td>临床资料、审评进度、PV报告</td>
+</tr><tr>
+<td class="name">海普瑞</td><td>肝素 / CDMO</td><td>上市药企</td><td>质量、供应链、财务</td><td>出口单证、批记录、客户对账</td>
+</tr><tr>
+<td class="name">翰宇药业</td><td>多肽药物</td><td>上市药企</td><td>质量、注册、生产</td><td>批记录、注册资料、生产报表</td>
+</tr><tr>
+<td class="name">金域医学</td><td>第三方医学检验</td><td>上市检验龙头</td><td>实验室运营、财务、交付</td><td>样本流转、检验报告、客户对账</td>
+</tr><tr>
+<td class="name">达安基因</td><td>分子诊断 / IVD</td><td>上市IVD企业</td><td>注册、质量、供应链</td><td>注册资料、质检记录、订单处理</td>
+</tr><tr>
+<td class="name">万孚生物</td><td>POCT / IVD</td><td>上市IVD企业</td><td>注册、质量、渠道运营</td><td>产品注册、质检台账、渠道库存</td>
+</tr><tr>
+<td class="name">白云山</td><td>中成药 / 化学药 / 医药商业</td><td>大型上市药企</td><td>质量、生产、商业运营</td><td>GMP文件、批记录、渠道报表</td>
+</tr><tr>
+<td class="name">康方生物</td><td>创新抗体药</td><td>上市Biopharma</td><td>临床运营、注册、PV</td><td>临床资料、审评跟踪、PV病例</td>
+</tr><tr>
+<td class="name">丽珠集团</td><td>化学药 / 生物药 / 原料药</td><td>大型上市药企</td><td>质量、注册、生产</td><td>GMP文件、注册资料、生产台账</td>
+</tr><tr>
+<td class="name">健帆生物</td><td>血液灌流器械</td><td>上市高值耗材企业</td><td>注册、质量、经销商管理</td><td>UDI追溯、注册资料、经销商对账</td>
+</tr><tr>
+<td class="name">大参林</td><td>连锁药店</td><td>上市医药零售企业</td><td>运营、财务、商品管理</td><td>门店报表、平台对账、库存同步</td>
+</tr><tr>
+<td class="name">香雪制药</td><td>中成药 / 医药制造</td><td>上市药企</td><td>质量、生产、销售运营</td><td>GMP文件、批记录、渠道费用核对</td>
+</tr></tbody>
+</table></div></section><section class="jh-region-panel" id="jh-tab4"><div class="jh-region-head"><h3>成渝：化学药、中药、疫苗与医疗器械增长集群</h3><div class="jh-region-count"><strong>13</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>成都天府国际生物城 / 成都医学城</span><span>重庆两江新区水土新城 / 巴南国际生物城</span><span>高新区与经开区医药制造基地</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">科伦药业</td><td>大输液 / 创新药 / 抗生素</td><td>大型上市药企</td><td>质量、注册、生产、供应链</td><td>批记录核查、注册资料、生产报表</td>
+</tr><tr>
+<td class="name">百利天恒</td><td>创新生物药 / ADC</td><td>上市Biotech</td><td>临床运营、注册、PV</td><td>临床资料、审评进度、PV病例</td>
+</tr><tr>
+<td class="name">康弘药业</td><td>眼科创新药 / 中成药</td><td>上市药企</td><td>注册、PV、商业运营</td><td>注册台账、ADR整理、渠道报表</td>
+</tr><tr>
+<td class="name">海思科</td><td>化学药 / 创新药</td><td>上市药企</td><td>注册、质量、商业运营</td><td>注册资料、GMP文档、销售数据</td>
+</tr><tr>
+<td class="name">迈克生物</td><td>IVD / 医学检验</td><td>上市IVD企业</td><td>注册、质量、供应链</td><td>注册资料、质检记录、装机台账</td>
+</tr><tr>
+<td class="name">成都先导</td><td>DNA编码化合物库 / CRO</td><td>上市CRO企业</td><td>项目管理、实验室运营、财务</td><td>客户报告、实验数据、项目结算</td>
+</tr><tr>
+<td class="name">华神科技</td><td>中药 / 生物医药</td><td>上市企业</td><td>质量、生产、渠道运营</td><td>GMP文件、生产记录、渠道台账</td>
+</tr><tr>
+<td class="name">智飞生物</td><td>疫苗代理与研发</td><td>大型上市疫苗企业</td><td>供应链、质量、PV</td><td>冷链追溯、批签发资料、ADR整理</td>
+</tr><tr>
+<td class="name">太极集团</td><td>中药 / 化学药</td><td>大型药企</td><td>质量、生产、渠道</td><td>GMP文档、批记录、经销商数据</td>
+</tr><tr>
+<td class="name">华森制药</td><td>中成药 / 化学药</td><td>上市药企</td><td>质量、生产、商业运营</td><td>生产台账、GMP文件、渠道报表</td>
+</tr><tr>
+<td class="name">重庆医药集团</td><td>医药商业 / 物流配送</td><td>区域医药商业龙头</td><td>财务、供应链、商业运营</td><td>医院对账、配送单据、库存同步</td>
+</tr><tr>
+<td class="name">华邦健康</td><td>制药 / 医疗健康</td><td>上市医药企业</td><td>质量、财务、供应链</td><td>GMP资料、采购订单、财务对账</td>
+</tr><tr>
+<td class="name">博腾股份</td><td>CDMO</td><td>上市CXO企业</td><td>项目管理、质量、生产</td><td>客户项目周报、GMP文档、批生产记录</td>
+</tr></tbody>
+</table></div></section><section class="jh-region-panel" id="jh-tab5"><div class="jh-region-head"><h3>华中：医药商业、IVD、中药与连锁药房集群</h3><div class="jh-region-count"><strong>15</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>武汉光谷生物城</span><span>郑州航空港 / 高新区生物医药产业基地</span><span>长沙高新区 / 浏阳生物医药园</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">九州通</td><td>医药商业 / 供应链</td><td>全国性医药流通龙头</td><td>财务、供应链、运营</td><td>订单录入、医院对账、物流追踪</td>
+</tr><tr>
+<td class="name">人福医药</td><td>麻醉药 / 综合制药</td><td>大型上市药企</td><td>质量、注册、生产</td><td>GMP文件、批记录、注册资料</td>
+</tr><tr>
+<td class="name">马应龙</td><td>中成药 / 眼药 / 零售</td><td>上市老字号药企</td><td>质量、渠道、财务</td><td>生产记录、门店数据、费用核对</td>
+</tr><tr>
+<td class="name">健民集团</td><td>中成药 / 儿科药</td><td>上市药企</td><td>质量、生产、渠道运营</td><td>GMP文件、批记录、渠道报表</td>
+</tr><tr>
+<td class="name">明德生物</td><td>POCT / IVD</td><td>上市IVD企业</td><td>注册、质量、供应链</td><td>注册资料、质检记录、订单处理</td>
+</tr><tr>
+<td class="name">安图生物</td><td>IVD / 化学发光</td><td>上市IVD企业</td><td>注册、质量、售后</td><td>注册资料、装机台账、售后工单</td>
+</tr><tr>
+<td class="name">华兰生物</td><td>血制品 / 疫苗</td><td>上市生物制品企业</td><td>质量、注册、PV</td><td>批签发资料、冷链追溯、ADR整理</td>
+</tr><tr>
+<td class="name">羚锐制药</td><td>中药贴膏剂</td><td>上市药企</td><td>质量、生产、渠道</td><td>批记录、GMP文件、经销商对账</td>
+</tr><tr>
+<td class="name">爱尔眼科</td><td>连锁专科医疗服务</td><td>上市医疗服务集团</td><td>运营、财务、人力</td><td>院区经营报表、费用核对、人员数据</td>
+</tr><tr>
+<td class="name">老百姓大药房</td><td>连锁药店</td><td>上市医药零售企业</td><td>运营、财务、商品管理</td><td>门店报表、平台对账、库存同步</td>
+</tr><tr>
+<td class="name">益丰药房</td><td>连锁药店</td><td>上市医药零售企业</td><td>运营、财务、商品管理</td><td>门店报表、发票核验、库存同步</td>
+</tr><tr>
+<td class="name">楚天科技</td><td>制药装备</td><td>上市制药装备企业</td><td>售后服务、供应链、财务</td><td>工单派发、备件库存、客户对账</td>
+</tr><tr>
+<td class="name">圣湘生物</td><td>分子诊断 / IVD</td><td>上市IVD企业</td><td>注册、质量、供应链</td><td>注册资料、质检记录、订单处理</td>
+</tr><tr>
+<td class="name">三诺生物</td><td>血糖监测 / POCT</td><td>上市医疗器械企业</td><td>注册、质量、渠道运营</td><td>注册资料、质检记录、渠道库存</td>
+</tr><tr>
+<td class="name">千金药业</td><td>中成药 / 女性健康</td><td>上市药企</td><td>质量、生产、渠道</td><td>GMP文档、批记录、销售报表</td>
+</tr></tbody>
+</table></div></section><section class="jh-region-panel" id="jh-tab6"><div class="jh-region-head"><h3>山东东北：化学药、医疗器械、血制品与老牌药企集群</h3><div class="jh-region-count"><strong>15</strong><span>家头部客户</span></div></div><div class="jh-region-hubs"><b>核心集聚地</b><span>济南 / 淄博 / 威海医药与器械制造带</span><span>长春高新区生物医药产业带</span><span>沈阳 / 哈尔滨老牌制药工业基地</span></div><div class="jh-region-table-wrap"><table class="jh-region-table">
+<thead><tr><th>企业名称</th><th>细分类目</th><th>规模/性质</th><th>优先触达部门</th><th>高频流程切入口</th></tr></thead>
+<tbody><tr>
+<td class="name">齐鲁制药</td><td>化学药 / 生物药</td><td>大型综合药企</td><td>质量、注册、生产</td><td>批记录、注册资料、生产台账</td>
+</tr><tr>
+<td class="name">威高集团</td><td>高值耗材 / 医疗器械</td><td>大型医疗器械集团</td><td>注册、质量、供应链</td><td>UDI追溯、质检记录、经销商对账</td>
+</tr><tr>
+<td class="name">新华医疗</td><td>医疗设备 / 制药装备</td><td>上市医疗器械企业</td><td>售后、质量、供应链</td><td>售后工单、质检台账、备件库存</td>
+</tr><tr>
+<td class="name">鲁抗医药</td><td>抗生素 / 化学药</td><td>上市药企</td><td>质量、生产、采购</td><td>批记录、物料台账、GMP文件</td>
+</tr><tr>
+<td class="name">东阿阿胶</td><td>中药 / 滋补健康</td><td>上市药企</td><td>质量、生产、渠道</td><td>批号追溯、生产记录、渠道库存</td>
+</tr><tr>
+<td class="name">步长制药</td><td>中成药 / 心脑血管</td><td>大型上市药企</td><td>质量、渠道、财务</td><td>GMP文件、经销商对账、费用核对</td>
+</tr><tr>
+<td class="name">山东药玻</td><td>药用玻璃包装</td><td>上市医药包材企业</td><td>质量、供应链、财务</td><td>质检记录、客户订单、发票对账</td>
+</tr><tr>
+<td class="name">华熙生物</td><td>透明质酸 / 医美原料</td><td>上市生物材料企业</td><td>质量、供应链、销售运营</td><td>质检台账、订单处理、渠道数据</td>
+</tr><tr>
+<td class="name">英科医疗</td><td>医用耗材</td><td>上市医疗器械企业</td><td>质量、供应链、财务</td><td>订单处理、出口单证、发票核验</td>
+</tr><tr>
+<td class="name">金城医药</td><td>头孢中间体 / 药品</td><td>上市药企</td><td>生产、质量、采购</td><td>生产台账、检验记录、采购对账</td>
+</tr><tr>
+<td class="name">东北制药</td><td>化学原料药 / 制剂</td><td>大型药企</td><td>生产、质量、供应链</td><td>批记录、GMP文件、物料台账</td>
+</tr><tr>
+<td class="name">长春高新</td><td>生长激素 / 生物制药</td><td>大型上市药企</td><td>质量、注册、商业运营</td><td>注册资料、批记录、销售报表</td>
+</tr><tr>
+<td class="name">吉林敖东</td><td>中成药 / 金融投资</td><td>上市药企</td><td>质量、生产、渠道运营</td><td>GMP文件、生产记录、渠道数据</td>
+</tr><tr>
+<td class="name">通化东宝</td><td>糖尿病药物 / 胰岛素</td><td>上市药企</td><td>质量、注册、PV</td><td>批记录、注册资料、药物警戒</td>
+</tr><tr>
+<td class="name">哈药集团</td><td>化学药 / OTC / 中药</td><td>大型药企</td><td>质量、生产、渠道</td><td>GMP文档、批记录、渠道报表</td>
+</tr></tbody>
+</table></div></section></section>
+<div class="footer-note">公开资料整理，用于销售选客与行业作战包，不作为企业排名。</div>
+</section>
+</main>
+</div>
+<script>
+(function(){
+  const btns = document.querySelectorAll('.module-btn');
+  const modules = document.querySelectorAll('.module');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      modules.forEach(m => m.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(btn.dataset.module);
+      if(target) target.classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+
+  document.querySelectorAll('.workspace').forEach(workspace => {
+    const tabs = workspace.querySelectorAll('.tab');
+    const panels = workspace.querySelectorAll('.panel');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.tab;
+        tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === targetId));
+        panels.forEach(p => p.classList.toggle('active', p.id === targetId));
+      });
+    });
+  });
+
+  document.querySelectorAll('.nav a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if(target) {
+        e.preventDefault();
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+})();
+</script>
+
+<script>
+(function(){
+  function initIsolatedRegionTabs(){
+    var root=document.querySelector('#m4 .jh-region-workspace');
+    if(!root) return;
+    var tabs=root.querySelectorAll('.jh-region-tab');
+    var panels=root.querySelectorAll('.jh-region-panel');
+    tabs.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id=btn.getAttribute('data-region');
+        tabs.forEach(function(b){ b.classList.toggle('active', b===btn); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.id===id); });
+      });
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initIsolatedRegionTabs);
+  else initIsolatedRegionTabs();
+})();
+</script>
+</body>
+</html>
